@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
 // src/cli.tsx
+import { readFileSync as readFileSync2 } from "fs";
+import { dirname as dirname2, join as join2 } from "path";
+import { fileURLToPath as fileURLToPath2 } from "url";
 import { render } from "ink";
 
 // src/app.tsx
@@ -8,6 +11,9 @@ import { useState as useState8 } from "react";
 import { Text as Text13, useApp, useInput as useInput4 } from "ink";
 
 // src/components/Layout.tsx
+import { readFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 import { Box, Text } from "ink";
 
 // src/utils/platform.ts
@@ -36,6 +42,8 @@ function getPlatformLabel() {
 
 // src/components/Layout.tsx
 import { jsx, jsxs } from "react/jsx-runtime";
+var __dirname = dirname(fileURLToPath(import.meta.url));
+var { version } = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf8"));
 function Layout({
   title,
   subtitle,
@@ -45,7 +53,7 @@ function Layout({
   return /* @__PURE__ */ jsxs(Box, { flexDirection: "column", paddingX: 1, children: [
     /* @__PURE__ */ jsxs(Box, { flexDirection: "column", borderStyle: "round", borderColor: "#58a6ff", paddingX: 1, children: [
       /* @__PURE__ */ jsx(Text, { color: "#58a6ff", children: `\u{1F6E0}  ${title}` }),
-      /* @__PURE__ */ jsx(Text, { color: "#6e7681", children: `v0.1.0         ${getPlatformLabel()}` })
+      /* @__PURE__ */ jsx(Text, { color: "#6e7681", children: `v${version}         ${getPlatformLabel()}` })
     ] }),
     subtitle ? /* @__PURE__ */ jsx(Box, { marginTop: 1, children: /* @__PURE__ */ jsx(Text, { color: "#f0f6fc", children: subtitle }) }) : null,
     /* @__PURE__ */ jsx(Box, { flexDirection: "column", marginTop: 1, children }),
@@ -1271,8 +1279,8 @@ async function detectBinary(name, args2) {
   if (!result.ok) {
     return { name, version: "Not installed", installed: false };
   }
-  const version = (result.stdout || result.stderr).split("\n")[0];
-  return { name, version, installed: true };
+  const version2 = (result.stdout || result.stderr).split("\n")[0];
+  return { name, version: version2, installed: true };
 }
 async function loadNodeSummary() {
   const [node, npm, pnpm, yarn, nvm, fnm, bun, whichNode, registryResult, npmrc] = await Promise.all([
@@ -1535,16 +1543,22 @@ var TOOL_REGISTRY = [
     ["lazygit", "Git TUI"],
     ["lazydocker", "Docker TUI"],
     ["claude-code", "AI coding assistant"]
-  ].map(
-    ([id, description]) => ({
+  ].map(([id, description]) => {
+    const BINARY_MAP = {
+      "ripgrep": "rg",
+      "neovim": "nvim",
+      "claude-code": "claude"
+    };
+    const binary = BINARY_MAP[id] ?? id;
+    return {
       id,
       name: id === "claude-code" ? "Claude Code" : id,
       description,
       category: "dev-tool",
-      detect: { command: `${id === "claude-code" ? "claude" : id} --version` },
+      detect: { command: `${binary} --version` },
       install: { official: { brew: `brew install ${id}` } }
-    })
-  )
+    };
+  })
 ];
 
 // src/modules/tools/ToolsModule.tsx
@@ -1600,7 +1614,7 @@ function ToolsModule({ onBack }) {
             items: [
               { label: "Copy install command to clipboard", value: "copy" },
               { label: "Run install directly (official)", value: "official" },
-              { label: "Run install directly (China mirror)", value: "china" },
+              ...selectedTool.install.china?.script || selectedTool.install.china?.mirror ? [{ label: "Run install directly (China mirror)", value: "china" }] : [],
               { label: "\u2190 Back to tool list", value: "back" }
             ],
             onSelect: async (value) => {
@@ -1686,6 +1700,8 @@ function App() {
 
 // src/cli.tsx
 import { jsx as jsx14 } from "react/jsx-runtime";
+var __dirname2 = dirname2(fileURLToPath2(import.meta.url));
+var PKG_VERSION = JSON.parse(readFileSync2(join2(__dirname2, "..", "package.json"), "utf8")).version;
 var HELP_TEXT = `
 DevHub \u2014 Developer Environment Configuration Manager
 =====================================================
@@ -1832,7 +1848,8 @@ if (args.includes("--help") || args.includes("-h")) {
   process.exit(0);
 }
 if (args.includes("--version") || args.includes("-v")) {
-  process.stdout.write("0.2.2\n");
+  process.stdout.write(`${PKG_VERSION}
+`);
   process.exit(0);
 }
 render(/* @__PURE__ */ jsx14(App, {}));

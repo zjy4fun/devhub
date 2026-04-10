@@ -63,7 +63,9 @@ export function ToolsModule({onBack}: {readonly onBack: () => void}) {
               items={[
                 {label: 'Copy install command to clipboard', value: 'copy'},
                 {label: 'Run install directly (official)', value: 'official'},
-                {label: 'Run install directly (China mirror)', value: 'china'},
+                ...(selectedTool.install.china?.script || selectedTool.install.china?.mirror
+                  ? [{label: 'Run install directly (China mirror)', value: 'china'}]
+                  : []),
                 {label: '← Back to tool list', value: 'back'},
               ]}
               onSelect={async (value) => {

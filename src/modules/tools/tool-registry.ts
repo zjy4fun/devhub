@@ -121,15 +121,20 @@ export const TOOL_REGISTRY: readonly Tool[] = [
     ['lazygit', 'Git TUI'],
     ['lazydocker', 'Docker TUI'],
     ['claude-code', 'AI coding assistant'],
-  ].map(
-    ([id, description]) =>
-      ({
-        id,
-        name: id === 'claude-code' ? 'Claude Code' : id,
-        description,
-        category: 'dev-tool',
-        detect: {command: `${id === 'claude-code' ? 'claude' : id} --version`},
-        install: {official: {brew: `brew install ${id}`}},
-      }) satisfies Tool,
-  ),
+  ].map(([id, description]) => {
+    const BINARY_MAP: Record<string, string> = {
+      'ripgrep': 'rg',
+      'neovim': 'nvim',
+      'claude-code': 'claude',
+    };
+    const binary = BINARY_MAP[id] ?? id;
+    return {
+      id,
+      name: id === 'claude-code' ? 'Claude Code' : id,
+      description,
+      category: 'dev-tool' as const,
+      detect: {command: `${binary} --version`},
+      install: {official: {brew: `brew install ${id}`}},
+    } satisfies Tool;
+  }),
 ];

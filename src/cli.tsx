@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 import React from 'react';
+import {readFileSync} from 'fs';
+import {dirname, join} from 'path';
+import {fileURLToPath} from 'url';
 import {render} from 'ink';
 import {App} from './app.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const PKG_VERSION = (JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8')) as {version: string}).version;
 
 const HELP_TEXT = `
 DevHub — Developer Environment Configuration Manager
@@ -152,7 +158,7 @@ if (args.includes('--help') || args.includes('-h')) {
 }
 
 if (args.includes('--version') || args.includes('-v')) {
-  process.stdout.write('0.2.2\n');
+  process.stdout.write(`${PKG_VERSION}\n`);
   process.exit(0);
 }
 
