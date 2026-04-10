@@ -11,11 +11,11 @@ DevHub 是一个 TypeScript + Ink TUI 工具，帮助开发者从一个终端入
 ## 快速开始
 
 ```bash
-npx devhub
+npx @zjy4fun/devhub
 ```
 
 ```bash
-pnpm add -g devhub
+pnpm add -g @zjy4fun/devhub
 devhub
 ```
 
