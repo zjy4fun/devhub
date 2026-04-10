@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Text, useApp, useInput} from 'ink';
 import {Layout} from './components/Layout.js';
 import {MenuList} from './components/MenuList.js';
@@ -27,15 +27,6 @@ export function App() {
       setRoute('main');
     }
   });
-
-  const isFirstRender = React.useRef(true);
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    process.stdout.write('\x1Bc');
-  }, [route]);
 
   if (route === 'git') {
     return <GitModule onBack={() => setRoute('main')} />;
