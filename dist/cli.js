@@ -49,7 +49,7 @@ function Layout({
     ] }),
     subtitle ? /* @__PURE__ */ jsx(Box, { marginTop: 1, children: /* @__PURE__ */ jsx(Text, { color: "#f0f6fc", children: subtitle }) }) : null,
     /* @__PURE__ */ jsx(Box, { flexDirection: "column", marginTop: 1, children }),
-    /* @__PURE__ */ jsx(Box, { marginTop: 1, children: footer ?? /* @__PURE__ */ jsx(Text, { color: "#6e7681", children: "q \u9000\u51FA  Esc \u8FD4\u56DE  Ctrl+C \u5F3A\u5236\u9000\u51FA" }) })
+    /* @__PURE__ */ jsx(Box, { marginTop: 1, children: footer ?? /* @__PURE__ */ jsx(Text, { color: "#6e7681", children: "q Quit  Esc Back  Ctrl+C Force exit" }) })
   ] });
 }
 
@@ -108,7 +108,7 @@ function MenuList({
   });
   return /* @__PURE__ */ jsxs2(Box2, { flexDirection: "column", children: [
     isSearching ? /* @__PURE__ */ jsxs2(Box2, { marginBottom: 1, children: [
-      /* @__PURE__ */ jsx2(Text2, { color: "#58a6ff", children: "\u641C\u7D22: " }),
+      /* @__PURE__ */ jsx2(Text2, { color: "#58a6ff", children: "Search: " }),
       /* @__PURE__ */ jsx2(TextInput, { defaultValue: query, onChange: setQuery, onSubmit: () => setIsSearching(false) })
     ] }) : null,
     filteredItems.map((item, index) => {
@@ -119,8 +119,8 @@ function MenuList({
         item.description ? /* @__PURE__ */ jsx2(Text2, { color: "#6e7681", children: `  ${item.description}` }) : null
       ] }, `${item.value}-${index}`);
     }),
-    filteredItems.length === 0 ? /* @__PURE__ */ jsx2(Text2, { color: "#6e7681", children: "\u65E0\u5339\u914D\u9879" }) : null,
-    /* @__PURE__ */ jsx2(Box2, { marginTop: 1, children: /* @__PURE__ */ jsx2(Text2, { color: "#6e7681", children: "\u2191\u2193 / j k \u5BFC\u822A  Enter \u8FDB\u5165  / \u641C\u7D22" }) })
+    filteredItems.length === 0 ? /* @__PURE__ */ jsx2(Text2, { color: "#6e7681", children: "No matches" }) : null,
+    /* @__PURE__ */ jsx2(Box2, { marginTop: 1, children: /* @__PURE__ */ jsx2(Text2, { color: "#6e7681", children: "\u2191\u2193 / j k Navigate  Enter Open  / Search" }) })
   ] });
 }
 
@@ -181,7 +181,7 @@ function ConfirmDialog({
   return /* @__PURE__ */ jsxs4(Box4, { flexDirection: "column", borderStyle: "round", borderColor: "#bc8cff", paddingX: 1, children: [
     /* @__PURE__ */ jsx5(Text5, { color: "#bc8cff", children: title }),
     /* @__PURE__ */ jsx5(Box4, { marginTop: 1, children: /* @__PURE__ */ jsx5(Text5, { children: diff }) }),
-    /* @__PURE__ */ jsx5(Box4, { marginTop: 1, children: /* @__PURE__ */ jsx5(Text5, { color: "#d29922", children: "\u6309 `y` / `Enter` \u786E\u8BA4\uFF0C\u6309 `n` / `Esc` \u53D6\u6D88" }) })
+    /* @__PURE__ */ jsx5(Box4, { marginTop: 1, children: /* @__PURE__ */ jsx5(Text5, { color: "#d29922", children: "Press `y` / `Enter` to confirm, `n` / `Esc` to cancel" }) })
   ] });
 }
 
@@ -218,7 +218,7 @@ function EditableField({
 import { Text as Text7 } from "ink";
 import { jsx as jsx7 } from "react/jsx-runtime";
 function BackButton() {
-  return /* @__PURE__ */ jsx7(Text7, { color: "#6e7681", children: "`Esc` / `q` \u8FD4\u56DE\u4E0A\u7EA7" });
+  return /* @__PURE__ */ jsx7(Text7, { color: "#6e7681", children: "`Esc` / `q` Back" });
 }
 
 // src/utils/file.ts
@@ -317,7 +317,7 @@ async function prepareGitConfigChange(key, currentValue, nextValue) {
   const safeKey = sanitizeInput(key);
   const safeValue = sanitizeInput(nextValue);
   return {
-    title: `\u786E\u8BA4\u66F4\u65B0 ${safeKey}`,
+    title: `Confirm update ${safeKey}`,
     command: ["config", "--global", safeKey, safeValue],
     diff: createDiffPreview(`${safeKey}=${currentValue}`, `${safeKey}=${safeValue}`)
   };
@@ -326,7 +326,7 @@ function prepareGitAliasChange() {
   const before = "[alias]\n# no standard aliases detected";
   const after = ["[alias]", "  st = status -sb", "  co = checkout", "  br = branch", "  lg = log --oneline --graph --decorate"].join("\n");
   return {
-    title: "\u786E\u8BA4\u914D\u7F6E\u5E38\u7528 alias",
+    title: "Confirm common aliases",
     command: ["alias-batch"],
     diff: createDiffPreview(before, after)
   };
@@ -379,26 +379,26 @@ async function loadGitConfig(cwd = process.cwd()) {
   const localConfig = localRaw ? parseGitConfig(localRaw) : null;
   const platform = detectPlatform();
   const preview = {
-    userName: globalConfig.user?.name ?? "(\u672A\u8BBE\u7F6E)",
-    userEmail: globalConfig.user?.email ?? "(\u672A\u8BBE\u7F6E)",
-    defaultEditor: globalConfig.core?.editor ?? "(\u672A\u8BBE\u7F6E)",
-    defaultBranch: globalConfig.init?.defaultBranch ?? "(\u672A\u8BBE\u7F6E)",
-    pullStrategy: globalConfig.pull?.rebase ?? "(\u672A\u8BBE\u7F6E)",
-    credentialHelper: globalConfig.credential?.helper ?? "(\u672A\u8BBE\u7F6E)"
+    userName: globalConfig.user?.name ?? "(not set)",
+    userEmail: globalConfig.user?.email ?? "(not set)",
+    defaultEditor: globalConfig.core?.editor ?? "(not set)",
+    defaultBranch: globalConfig.init?.defaultBranch ?? "(not set)",
+    pullStrategy: globalConfig.pull?.rebase ?? "(not set)",
+    credentialHelper: globalConfig.credential?.helper ?? "(not set)"
   };
   const health = [
-    globalConfig.user?.name ? { status: "ok", message: "user.name \u5DF2\u914D\u7F6E" } : { status: "error", message: "user.name \u672A\u914D\u7F6E" },
-    globalConfig.user?.email ? { status: "ok", message: "user.email \u5DF2\u914D\u7F6E" } : { status: "error", message: "user.email \u672A\u914D\u7F6E" },
-    globalConfig.init?.defaultBranch === "main" ? { status: "ok", message: "init.defaultBranch = main" } : { status: "warn", message: "init.defaultBranch \u5EFA\u8BAE\u8BBE\u7F6E\u4E3A main" },
+    globalConfig.user?.name ? { status: "ok", message: "user.name configured" } : { status: "error", message: "user.name not configured" },
+    globalConfig.user?.email ? { status: "ok", message: "user.email configured" } : { status: "error", message: "user.email not configured" },
+    globalConfig.init?.defaultBranch === "main" ? { status: "ok", message: "init.defaultBranch = main" } : { status: "warn", message: "init.defaultBranch should be set to main" },
     globalConfig.core?.autocrlf ? { status: "ok", message: `core.autocrlf = ${globalConfig.core.autocrlf}` } : {
       status: "warn",
-      message: `core.autocrlf \u672A\u8BBE\u7F6E\uFF08\u5EFA\u8BAE ${platform === "Windows" ? "true" : "input"}\uFF09`
+      message: `core.autocrlf not set (recommended: ${platform === "Windows" ? "true" : "input"})`
     },
-    globalConfig.pull?.rebase ? { status: "ok", message: `pull.rebase = ${globalConfig.pull.rebase}` } : { status: "warn", message: "pull.rebase \u672A\u8BBE\u7F6E" },
-    globalConfig.commit?.gpgsign || globalConfig.gpg?.format || globalConfig.user?.signingkey ? { status: "ok", message: "\u68C0\u6D4B\u5230 signing \u76F8\u5173\u914D\u7F6E" } : { status: "warn", message: "\u672A\u68C0\u6D4B\u5230 GPG/SSH signing \u914D\u7F6E" }
+    globalConfig.pull?.rebase ? { status: "ok", message: `pull.rebase = ${globalConfig.pull.rebase}` } : { status: "warn", message: "pull.rebase not set" },
+    globalConfig.commit?.gpgsign || globalConfig.gpg?.format || globalConfig.user?.signingkey ? { status: "ok", message: "Signing-related config detected" } : { status: "warn", message: "No GPG/SSH signing config detected" }
   ];
   if (await pathExists(localPath)) {
-    health.push({ status: "info", message: `\u68C0\u6D4B\u5230 local config: ${localPath}` });
+    health.push({ status: "info", message: `Local config detected: ${localPath}` });
   }
   return {
     globalPath,
@@ -435,38 +435,38 @@ function GitModule({ onBack }) {
   }, []);
   const overview = useMemo2(() => summary?.preview, [summary]);
   if (loading || !summary || !overview) {
-    return /* @__PURE__ */ jsx8(Layout, { title: "DevHub \u2014 Git \u914D\u7F6E", subtitle: "\u{1F4E6} Git \u914D\u7F6E    ~/.gitconfig", children: /* @__PURE__ */ jsx8(Text8, { color: "#58a6ff", children: "\u52A0\u8F7D Git \u914D\u7F6E\u4E2D..." }) });
+    return /* @__PURE__ */ jsx8(Layout, { title: "DevHub \u2014 Git Config", subtitle: "\u{1F4E6} Git Config    ~/.gitconfig", children: /* @__PURE__ */ jsx8(Text8, { color: "#58a6ff", children: "Loading Git config..." }) });
   }
   const actions = [
-    { label: "\u4FEE\u6539\u7528\u6237\u540D/\u90AE\u7BB1", value: "identity" },
-    { label: "\u4FEE\u6539\u9ED8\u8BA4\u7F16\u8F91\u5668", value: "editor" },
-    { label: "\u4FEE\u6539\u9ED8\u8BA4\u5206\u652F\u540D", value: "branch" },
-    { label: "\u914D\u7F6E\u5E38\u7528 alias", value: "alias" },
-    { label: "\u914D\u7F6E pull \u7B56\u7565", value: "pull" },
-    { label: "\u67E5\u770B\u5B8C\u6574\u914D\u7F6E\uFF08raw\uFF09", value: "raw" },
-    { label: "\u2190 \u8FD4\u56DE\u4E3B\u83DC\u5355", value: "back" }
+    { label: "Edit username/email", value: "identity" },
+    { label: "Edit default editor", value: "editor" },
+    { label: "Edit default branch name", value: "branch" },
+    { label: "Set common aliases", value: "alias" },
+    { label: "Set pull strategy", value: "pull" },
+    { label: "View full config (raw)", value: "raw" },
+    { label: "\u2190 Back to main menu", value: "back" }
   ];
   const submitSingleChange = async (key, currentValue, nextValue) => {
     setPending(await prepareGitConfigChange(key, currentValue, nextValue));
     setView("confirm");
   };
-  return /* @__PURE__ */ jsxs6(Layout, { title: "DevHub \u2014 Git \u914D\u7F6E", subtitle: "\u{1F4E6} Git \u914D\u7F6E    ~/.gitconfig", children: [
-    /* @__PURE__ */ jsx8(Text8, { color: "#6e7681", children: "\u2500\u2500 \u5F53\u524D\u914D\u7F6E\u9884\u89C8 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "\u7528\u6237\u540D", value: overview.userName, muted: overview.userName === "(\u672A\u8BBE\u7F6E)" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "\u90AE\u7BB1", value: overview.userEmail, muted: overview.userEmail === "(\u672A\u8BBE\u7F6E)" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "\u9ED8\u8BA4\u7F16\u8F91\u5668", value: overview.defaultEditor, muted: overview.defaultEditor === "(\u672A\u8BBE\u7F6E)" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "\u9ED8\u8BA4\u5206\u652F", value: overview.defaultBranch, muted: overview.defaultBranch === "(\u672A\u8BBE\u7F6E)" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "pull \u7B56\u7565", value: overview.pullStrategy, muted: overview.pullStrategy === "(\u672A\u8BBE\u7F6E)" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "\u51ED\u8BC1\u5B58\u50A8", value: overview.credentialHelper, muted: overview.credentialHelper === "(\u672A\u8BBE\u7F6E)" }),
+  return /* @__PURE__ */ jsxs6(Layout, { title: "DevHub \u2014 Git Config", subtitle: "\u{1F4E6} Git Config    ~/.gitconfig", children: [
+    /* @__PURE__ */ jsx8(Text8, { color: "#6e7681", children: "\u2500\u2500 Current Config Preview \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+    /* @__PURE__ */ jsx8(KeyValue, { label: "Username", value: overview.userName, muted: overview.userName === "(not set)" }),
+    /* @__PURE__ */ jsx8(KeyValue, { label: "Email", value: overview.userEmail, muted: overview.userEmail === "(not set)" }),
+    /* @__PURE__ */ jsx8(KeyValue, { label: "Default Editor", value: overview.defaultEditor, muted: overview.defaultEditor === "(not set)" }),
+    /* @__PURE__ */ jsx8(KeyValue, { label: "Default Branch", value: overview.defaultBranch, muted: overview.defaultBranch === "(not set)" }),
+    /* @__PURE__ */ jsx8(KeyValue, { label: "Pull Strategy", value: overview.pullStrategy, muted: overview.pullStrategy === "(not set)" }),
+    /* @__PURE__ */ jsx8(KeyValue, { label: "Credential Helper", value: overview.credentialHelper, muted: overview.credentialHelper === "(not set)" }),
     /* @__PURE__ */ jsxs6(Box6, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx8(Text8, { color: "#6e7681", children: "\u2500\u2500 \u5065\u5EB7\u68C0\u67E5 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx8(Text8, { color: "#6e7681", children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       summary.health.map((item, index) => /* @__PURE__ */ jsxs6(Box6, { children: [
         /* @__PURE__ */ jsx8(StatusBadge, { variant: item.status }),
         /* @__PURE__ */ jsx8(Text8, { children: ` ${item.message}` })
       ] }, `${item.status}-${item.message}-${index}`))
     ] }),
     /* @__PURE__ */ jsxs6(Box6, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx8(Text8, { color: "#6e7681", children: "\u2500\u2500 \u64CD\u4F5C \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx8(Text8, { color: "#6e7681", children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       view === "menu" ? /* @__PURE__ */ jsx8(
         MenuList,
         {
@@ -499,18 +499,18 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
         /* @__PURE__ */ jsx8(
           EditableField,
           {
-            label: `\u5F53\u524D\u7528\u6237\u540D: ${overview.userName}`,
+            label: `Current username: ${overview.userName}`,
             defaultValue: summary.globalConfig.user?.name,
-            placeholder: "\u65B0\u7684 Git \u7528\u6237\u540D",
+            placeholder: "New Git username",
             onSubmit: (value) => void submitSingleChange("user.name", summary.globalConfig.user?.name ?? "", value)
           }
         ),
         /* @__PURE__ */ jsx8(
           EditableField,
           {
-            label: `\u5F53\u524D\u90AE\u7BB1: ${overview.userEmail}`,
+            label: `Current email: ${overview.userEmail}`,
             defaultValue: summary.globalConfig.user?.email,
-            placeholder: "\u65B0\u7684 Git \u90AE\u7BB1",
+            placeholder: "New Git email",
             onSubmit: (value) => void submitSingleChange("user.email", summary.globalConfig.user?.email ?? "", value)
           }
         ),
@@ -520,9 +520,9 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
         /* @__PURE__ */ jsx8(
           EditableField,
           {
-            label: `\u5F53\u524D\u9ED8\u8BA4\u7F16\u8F91\u5668: ${overview.defaultEditor}`,
+            label: `Current default editor: ${overview.defaultEditor}`,
             defaultValue: summary.globalConfig.core?.editor,
-            placeholder: "\u4F8B\u5982 code --wait",
+            placeholder: "e.g. code --wait",
             onSubmit: (value) => void submitSingleChange("core.editor", summary.globalConfig.core?.editor ?? "", value)
           }
         ),
@@ -532,7 +532,7 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
         /* @__PURE__ */ jsx8(
           EditableField,
           {
-            label: `\u5F53\u524D\u9ED8\u8BA4\u5206\u652F: ${overview.defaultBranch}`,
+            label: `Current default branch: ${overview.defaultBranch}`,
             defaultValue: summary.globalConfig.init?.defaultBranch ?? "main",
             placeholder: "main",
             onSubmit: (value) => void submitSingleChange("init.defaultBranch", summary.globalConfig.init?.defaultBranch ?? "", value)
@@ -544,7 +544,7 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
         /* @__PURE__ */ jsx8(
           EditableField,
           {
-            label: `\u5F53\u524D pull \u7B56\u7565: ${overview.pullStrategy}`,
+            label: `Current pull strategy: ${overview.pullStrategy}`,
             defaultValue: summary.globalConfig.pull?.rebase ?? "true",
             placeholder: "true / false / merges",
             onSubmit: (value) => void submitSingleChange("pull.rebase", summary.globalConfig.pull?.rebase ?? "", value)
@@ -563,7 +563,7 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
           },
           onConfirm: async () => {
             const result = await executeGitChange(pending);
-            setMessage(result.ok ? result.stdout || "\u66F4\u65B0\u6210\u529F\u3002" : `\u6267\u884C\u5931\u8D25: ${result.stderr}`);
+            setMessage(result.ok ? result.stdout || "Updated successfully." : `Failed: ${result.stderr}`);
             setPending(null);
             setView("menu");
             await refresh();
@@ -574,7 +574,7 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
         /* @__PURE__ */ jsx8(Text8, { children: rawText }),
         /* @__PURE__ */ jsx8(BackButton, {})
       ] }) : null,
-      message ? /* @__PURE__ */ jsx8(Box6, { marginTop: 1, children: /* @__PURE__ */ jsx8(Text8, { color: message.startsWith("\u6267\u884C\u5931\u8D25") ? "#f85149" : "#3fb950", children: message }) }) : null,
+      message ? /* @__PURE__ */ jsx8(Box6, { marginTop: 1, children: /* @__PURE__ */ jsx8(Text8, { color: message.startsWith("Failed") ? "#f85149" : "#3fb950", children: message }) }) : null,
       error ? /* @__PURE__ */ jsx8(Text8, { color: "#f85149", children: error }) : null
     ] })
   ] });
@@ -593,11 +593,11 @@ async function prepareHostConfigAppend(hostAlias, hostName, user, identityFile) 
   const next = current.endsWith("\n") || current.length === 0 ? `${current}${block}` : `${current}
 ${block}`;
   return {
-    title: "\u786E\u8BA4\u66F4\u65B0 SSH \u4E3B\u673A\u914D\u7F6E",
+    title: "Confirm SSH host config update",
     diff: createDiffPreview(current, next),
     execute: async () => {
       await writeTextFile(configPath, next);
-      return { ok: true, stdout: "SSH config \u5DF2\u66F4\u65B0\u3002", stderr: "" };
+      return { ok: true, stdout: "SSH config updated.", stderr: "" };
     }
   };
 }
@@ -737,15 +737,15 @@ ${agentList.stderr}`;
   const sshDirMode = await pathExists(sshDir) ? toOctalMode((await fs2.stat(sshDir)).mode) : "missing";
   const configMode = await pathExists(configPath) ? toOctalMode((await fs2.stat(configPath)).mode) : "missing";
   const health = [
-    sshDirMode === "0700" ? { status: "ok", message: "~/.ssh \u76EE\u5F55\u6743\u9650 700" } : { status: "warn", message: `~/.ssh \u76EE\u5F55\u6743\u9650\u5EFA\u8BAE 700\uFF0C\u5F53\u524D ${sshDirMode}` },
-    configMode === "0600" ? { status: "ok", message: "config \u6587\u4EF6\u6743\u9650 600" } : { status: "warn", message: `config \u6587\u4EF6\u6743\u9650\u5EFA\u8BAE 600\uFF0C\u5F53\u524D ${configMode}` }
+    sshDirMode === "0700" ? { status: "ok", message: "~/.ssh directory mode 700" } : { status: "warn", message: `~/.ssh directory mode should be 700, current ${sshDirMode}` },
+    configMode === "0600" ? { status: "ok", message: "config file mode 600" } : { status: "warn", message: `config file mode should be 600, current ${configMode}` }
   ];
   for (const key of keys) {
     if (key.privateMode !== "0600") {
-      health.push({ status: "error", message: `${key.name} \u79C1\u94A5\u6743\u9650\u5E94\u4E3A 600\uFF0C\u5F53\u524D ${key.privateMode}` });
+      health.push({ status: "error", message: `${key.name} private key mode should be 600, current ${key.privateMode}` });
     }
     if (!key.agentLoaded) {
-      health.push({ status: "warn", message: `${key.name} \u672A\u52A0\u8F7D\u5230 ssh-agent` });
+      health.push({ status: "warn", message: `${key.name} is not loaded into ssh-agent` });
     }
   }
   for (const host of hosts) {
@@ -754,7 +754,7 @@ ${agentList.stderr}`;
     }
     const resolvedIdentity = host.identityFile.startsWith("~/") ? expandHome(host.identityFile) : host.identityFile;
     if (!await pathExists(resolvedIdentity)) {
-      health.push({ status: "warn", message: `config \u4E2D\u5F15\u7528\u4E86 ${host.identityFile}\uFF0C\u4F46\u8BE5\u6587\u4EF6\u4E0D\u5B58\u5728` });
+      health.push({ status: "warn", message: `config references ${host.identityFile}, but that file does not exist` });
     }
   }
   return { sshDir, configPath, configRaw, keys, hosts, health };
@@ -778,37 +778,37 @@ function SSHModule({ onBack }) {
     void refresh();
   }, []);
   if (loading || !summary) {
-    return /* @__PURE__ */ jsx9(Layout, { title: "DevHub \u2014 SSH \u914D\u7F6E", subtitle: "\u{1F510} SSH \u914D\u7F6E    ~/.ssh/", children: /* @__PURE__ */ jsx9(Text9, { color: "#58a6ff", children: "\u52A0\u8F7D SSH \u914D\u7F6E\u4E2D..." }) });
+    return /* @__PURE__ */ jsx9(Layout, { title: "DevHub \u2014 SSH Config", subtitle: "\u{1F510} SSH Config    ~/.ssh/", children: /* @__PURE__ */ jsx9(Text9, { color: "#58a6ff", children: "Loading SSH config..." }) });
   }
-  return /* @__PURE__ */ jsxs7(Layout, { title: "DevHub \u2014 SSH \u914D\u7F6E", subtitle: "\u{1F510} SSH \u914D\u7F6E    ~/.ssh/", children: [
-    /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 \u5BC6\u94A5\u5217\u8868 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-    summary.keys.length === 0 ? /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u672A\u68C0\u6D4B\u5230\u5BC6\u94A5\u6587\u4EF6" }) : null,
-    summary.keys.map((key, index) => /* @__PURE__ */ jsx9(Text9, { children: `\u{1F511} ${key.name}    ${key.type}  ${key.agentLoaded ? "\u2713 agent\u5DF2\u52A0\u8F7D" : "\u2717 agent\u672A\u52A0\u8F7D"}  ${key.privateMode === "0600" ? "\u2713 \u6743\u9650600" : `\u26A0 \u6743\u9650${key.privateMode}`}` }, `${key.name}-${key.path}-${index}`)),
+  return /* @__PURE__ */ jsxs7(Layout, { title: "DevHub \u2014 SSH Config", subtitle: "\u{1F510} SSH Config    ~/.ssh/", children: [
+    /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 Key List \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+    summary.keys.length === 0 ? /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "No key files detected" }) : null,
+    summary.keys.map((key, index) => /* @__PURE__ */ jsx9(Text9, { children: `\u{1F511} ${key.name}    ${key.type}  ${key.agentLoaded ? "\u2713 agent loaded" : "\u2717 agent not loaded"}  ${key.privateMode === "0600" ? "\u2713 mode 600" : `\u26A0 mode ${key.privateMode}`}` }, `${key.name}-${key.path}-${index}`)),
     /* @__PURE__ */ jsxs7(Box7, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 \u4E3B\u673A\u914D\u7F6E \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-      summary.hosts.length === 0 ? /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u672A\u68C0\u6D4B\u5230 Host \u914D\u7F6E" }) : null,
+      /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 Host Config \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      summary.hosts.length === 0 ? /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "No Host config detected" }) : null,
       summary.hosts.map((host, index) => /* @__PURE__ */ jsx9(Text9, { children: `${host.host}     \u2192 ${host.user}@${host.hostname}:${host.port} (${host.identityFile ?? "no IdentityFile"})` }, `${host.host}-${host.hostname}-${index}`))
     ] }),
     /* @__PURE__ */ jsxs7(Box7, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 \u5065\u5EB7\u68C0\u67E5 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       summary.health.map((item, index) => /* @__PURE__ */ jsxs7(Box7, { children: [
         /* @__PURE__ */ jsx9(StatusBadge, { variant: item.status }),
         /* @__PURE__ */ jsx9(Text9, { children: ` ${item.message}` })
       ] }, `${item.status}-${item.message}-${index}`))
     ] }),
     /* @__PURE__ */ jsxs7(Box7, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 \u64CD\u4F5C \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       view === "menu" ? /* @__PURE__ */ jsx9(
         MenuList,
         {
           items: [
-            { label: "\u751F\u6210\u65B0\u5BC6\u94A5\u5BF9", value: "generate" },
-            { label: "\u6DFB\u52A0\u5BC6\u94A5\u5230 ssh-agent", value: "add-agent" },
-            { label: "\u7F16\u8F91\u4E3B\u673A\u914D\u7F6E", value: "edit-host" },
-            { label: "\u6D4B\u8BD5\u4E3B\u673A\u8FDE\u63A5", value: "test" },
-            { label: "\u4FEE\u590D\u6587\u4EF6\u6743\u9650", value: "fix" },
-            { label: "\u67E5\u770B\u5B8C\u6574 config\uFF08raw\uFF09", value: "raw" },
-            { label: "\u2190 \u8FD4\u56DE\u4E3B\u83DC\u5355", value: "back" }
+            { label: "Generate new key pair", value: "generate" },
+            { label: "Add key to ssh-agent", value: "add-agent" },
+            { label: "Edit host config", value: "edit-host" },
+            { label: "Test host connection", value: "test" },
+            { label: "Fix file permissions", value: "fix" },
+            { label: "View full config (raw)", value: "raw" },
+            { label: "\u2190 Back to main menu", value: "back" }
           ],
           onSelect: async (value) => {
             if (value === "back") {
@@ -833,16 +833,16 @@ function SSHModule({ onBack }) {
         /* @__PURE__ */ jsx9(
           EditableField,
           {
-            label: "\u8F93\u5165\u90AE\u7BB1\u4E0E\u65B0\u5BC6\u94A5\u6587\u4EF6\u540D\uFF0C\u683C\u5F0F\uFF1Aemail,fileName",
+            label: "Enter email and new key filename in the format: email,fileName",
             placeholder: "name@example.com,id_work",
             onSubmit: async (value) => {
               const [email, fileName] = value.split(",").map((part) => part.trim());
               if (!email || !fileName) {
-                setMessage("\u8BF7\u8F93\u5165\u90AE\u7BB1\u548C\u5BC6\u94A5\u6587\u4EF6\u540D\u3002");
+                setMessage("Please enter an email and key filename.");
                 return;
               }
               const result = await generateSSHKey(email, fileName);
-              setMessage(result.ok ? result.stdout || "\u5BC6\u94A5\u5DF2\u751F\u6210\u3002" : result.stderr);
+              setMessage(result.ok ? result.stdout || "Key generated." : result.stderr);
               setView("menu");
               await refresh();
             }
@@ -854,16 +854,16 @@ function SSHModule({ onBack }) {
         /* @__PURE__ */ jsx9(
           EditableField,
           {
-            label: "\u8F93\u5165\u8981\u6DFB\u52A0\u5230 agent \u7684\u5BC6\u94A5\u6587\u4EF6\u540D",
+            label: "Enter the key filename to add to the agent",
             placeholder: "id_ed25519",
             defaultValue: selectedKey,
             onSubmit: async (value) => {
               if (!value.trim()) {
-                setMessage("\u8BF7\u8F93\u5165\u5BC6\u94A5\u6587\u4EF6\u540D\u3002");
+                setMessage("Please enter a key filename.");
                 return;
               }
               const result = await addKeyToAgent(value);
-              setMessage(result.ok ? result.stdout || "\u5DF2\u6DFB\u52A0\u5230 ssh-agent\u3002" : result.stderr);
+              setMessage(result.ok ? result.stdout || "Added to ssh-agent." : result.stderr);
               setView("menu");
               await refresh();
             }
@@ -875,12 +875,12 @@ function SSHModule({ onBack }) {
         /* @__PURE__ */ jsx9(
           EditableField,
           {
-            label: "\u8F93\u5165\u4E3B\u673A\u914D\u7F6E\uFF0C\u683C\u5F0F\uFF1Aalias,hostname,user,identityFile",
+            label: "Enter host config in the format: alias,hostname,user,identityFile",
             placeholder: "github-work,github.com,git,~/.ssh/id_work",
             onSubmit: async (value) => {
               const [alias, hostName, user, identityFile] = value.split(",").map((part) => part.trim());
               if (!alias || !hostName || !user || !identityFile) {
-                setMessage("\u8BF7\u8F93\u5165 alias\u3001hostname\u3001user \u548C identityFile\u3002");
+                setMessage("Please enter alias, hostname, user, and identityFile.");
                 return;
               }
               setPending(await prepareHostConfigAppend(alias, hostName, user, identityFile));
@@ -894,15 +894,15 @@ function SSHModule({ onBack }) {
         /* @__PURE__ */ jsx9(
           EditableField,
           {
-            label: "\u8F93\u5165\u8981\u6D4B\u8BD5\u7684 Host \u522B\u540D",
+            label: "Enter the Host alias to test",
             placeholder: "github.com",
             onSubmit: async (value) => {
               if (!value.trim()) {
-                setMessage("\u8BF7\u8F93\u5165\u8981\u6D4B\u8BD5\u7684 Host \u522B\u540D\u3002");
+                setMessage("Please enter the Host alias to test.");
                 return;
               }
               const result = await testSSHHost(value);
-              setMessage(result.ok ? result.stdout || result.stderr || "\u8FDE\u63A5\u6D4B\u8BD5\u5B8C\u6210\u3002" : result.stderr);
+              setMessage(result.ok ? result.stdout || result.stderr || "Connection test complete." : result.stderr);
               setView("menu");
             }
           }
@@ -957,7 +957,7 @@ async function prepareEnvChange(filePath, key, value) {
 `;
   }
   return {
-    title: `\u786E\u8BA4\u66F4\u65B0\u73AF\u5883\u53D8\u91CF ${safeKey}`,
+    title: `Confirm update environment variable ${safeKey}`,
     diff: createDiffPreview(current, next),
     execute: async () => {
       await writeTextFile(filePath, next);
@@ -984,9 +984,9 @@ function getShellFiles(shellPath, cwd = process.cwd()) {
       path: filePath,
       exists: false,
       current: filePath.includes(shellName),
-      note: filePath.includes(shellName) ? "(\u5F53\u524D shell)" : void 0
+      note: filePath.includes(shellName) ? "(current shell)" : void 0
     })),
-    { path: path5.join(cwd, ".env"), exists: false, current: false, note: "(\u5F53\u524D\u76EE\u5F55)" }
+    { path: path5.join(cwd, ".env"), exists: false, current: false, note: "(current directory)" }
   ];
 }
 async function parseEnvFile(filePath) {
@@ -1098,50 +1098,50 @@ function EnvModule({ onBack }) {
     return summary.entries.filter((entry) => entry.key.toLowerCase().includes(query.toLowerCase()));
   }, [summary, query]);
   if (loading || !summary) {
-    return /* @__PURE__ */ jsx10(Layout, { title: "DevHub \u2014 \u73AF\u5883\u53D8\u91CF", subtitle: "\u{1F511} \u73AF\u5883\u53D8\u91CF\u7BA1\u7406", children: /* @__PURE__ */ jsx10(Text10, { color: "#58a6ff", children: "\u52A0\u8F7D\u73AF\u5883\u53D8\u91CF\u914D\u7F6E\u4E2D..." }) });
+    return /* @__PURE__ */ jsx10(Layout, { title: "DevHub \u2014 Environment Variables", subtitle: "\u{1F511} Environment Variable Management", children: /* @__PURE__ */ jsx10(Text10, { color: "#58a6ff", children: "Loading environment variable config..." }) });
   }
-  return /* @__PURE__ */ jsxs8(Layout, { title: "DevHub \u2014 \u73AF\u5883\u53D8\u91CF", subtitle: "\u{1F511} \u73AF\u5883\u53D8\u91CF\u7BA1\u7406", children: [
-    /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 \u68C0\u6D4B\u5230\u7684 Shell \u914D\u7F6E\u6587\u4EF6 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+  return /* @__PURE__ */ jsxs8(Layout, { title: "DevHub \u2014 Environment Variables", subtitle: "\u{1F511} Environment Variable Management", children: [
+    /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 Detected Shell Config Files \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
     summary.files.map((file) => /* @__PURE__ */ jsx10(Text10, { color: file.exists ? "#f0f6fc" : "#6e7681", children: `${file.exists ? "\u2713" : " "} ${file.path}${file.note ? `  ${file.note}` : ""}` }, file.path)),
     /* @__PURE__ */ jsxs8(Box8, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 \u73AF\u5883\u53D8\u91CF\u6982\u89C8 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 Environment Overview \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       effectiveEntries.slice(0, 8).map((entry) => /* @__PURE__ */ jsx10(Text10, { children: `${entry.key.padEnd(20)} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  \u2190 ${entry.file}:${entry.line}` }, `${entry.key}-${entry.file}-${entry.line}`))
     ] }),
     /* @__PURE__ */ jsxs8(Box8, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 \u5065\u5EB7\u68C0\u67E5 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       summary.duplicates.map((key) => /* @__PURE__ */ jsxs8(Box8, { children: [
         /* @__PURE__ */ jsx10(StatusBadge, { variant: "warn" }),
-        /* @__PURE__ */ jsx10(Text10, { children: ` ${key} \u91CD\u590D\u5B9A\u4E49` })
+        /* @__PURE__ */ jsx10(Text10, { children: ` ${key} defined multiple times` })
       ] }, `duplicate-${key}`)),
       summary.missingPathEntries.map((entry) => /* @__PURE__ */ jsxs8(Box8, { children: [
         /* @__PURE__ */ jsx10(StatusBadge, { variant: "warn" }),
-        /* @__PURE__ */ jsx10(Text10, { children: ` PATH \u4E2D\u5305\u542B\u4E0D\u5B58\u5728\u7684\u76EE\u5F55: ${entry}` })
+        /* @__PURE__ */ jsx10(Text10, { children: ` PATH includes a missing directory: ${entry}` })
       ] }, `missing-path-${entry}`)),
       summary.effectiveMap.get("EDITOR") ? /* @__PURE__ */ jsxs8(Box8, { children: [
         /* @__PURE__ */ jsx10(StatusBadge, { variant: "ok" }),
-        /* @__PURE__ */ jsx10(Text10, { children: " EDITOR \u5DF2\u8BBE\u7F6E" })
+        /* @__PURE__ */ jsx10(Text10, { children: " EDITOR is set" })
       ] }) : /* @__PURE__ */ jsxs8(Box8, { children: [
         /* @__PURE__ */ jsx10(StatusBadge, { variant: "warn" }),
-        /* @__PURE__ */ jsx10(Text10, { children: " EDITOR \u672A\u8BBE\u7F6E" })
+        /* @__PURE__ */ jsx10(Text10, { children: " EDITOR is not set" })
       ] }),
       summary.effectiveMap.get("LANG")?.value === "en_US.UTF-8" ? /* @__PURE__ */ jsxs8(Box8, { children: [
         /* @__PURE__ */ jsx10(StatusBadge, { variant: "ok" }),
-        /* @__PURE__ */ jsx10(Text10, { children: " LANG \u5DF2\u8BBE\u7F6E\u4E3A en_US.UTF-8" })
+        /* @__PURE__ */ jsx10(Text10, { children: " LANG is set to en_US.UTF-8" })
       ] }) : null
     ] }),
     /* @__PURE__ */ jsxs8(Box8, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 \u64CD\u4F5C \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       view === "menu" ? /* @__PURE__ */ jsx10(
         MenuList,
         {
           items: [
-            { label: "\u641C\u7D22\u53D8\u91CF\uFF08\u8F93\u5165\u53D8\u91CF\u540D\u6EAF\u6E90\uFF09", value: "search" },
-            { label: "\u67E5\u770B PATH \u8BE6\u60C5", value: "path" },
-            { label: "\u6DFB\u52A0\u65B0\u73AF\u5883\u53D8\u91CF", value: "add" },
-            { label: "\u4FEE\u6539\u5DF2\u6709\u53D8\u91CF", value: "edit" },
-            { label: "\u68C0\u67E5\u91CD\u590D\u5B9A\u4E49", value: "dupes" },
-            { label: "\u67E5\u770B\u539F\u59CB\u6587\u4EF6", value: "raw" },
-            { label: "\u2190 \u8FD4\u56DE\u4E3B\u83DC\u5355", value: "back" }
+            { label: "Search variables (trace by variable name)", value: "search" },
+            { label: "View PATH details", value: "path" },
+            { label: "Add a new environment variable", value: "add" },
+            { label: "Edit an existing variable", value: "edit" },
+            { label: "Check duplicate definitions", value: "dupes" },
+            { label: "View raw files", value: "raw" },
+            { label: "\u2190 Back to main menu", value: "back" }
           ],
           onSelect: (value) => {
             if (value === "back") {
@@ -1158,9 +1158,9 @@ function EnvModule({ onBack }) {
         }
       ) : null,
       view === "search" ? /* @__PURE__ */ jsxs8(Box8, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx10(EditableField, { label: "\u8F93\u5165\u53D8\u91CF\u540D", placeholder: "OPENAI_API_KEY", defaultValue: query, onSubmit: setQuery }),
+        /* @__PURE__ */ jsx10(EditableField, { label: "Enter variable name", placeholder: "OPENAI_API_KEY", defaultValue: query, onSubmit: setQuery }),
         searchMatches.map((entry) => /* @__PURE__ */ jsx10(Text10, { children: `${entry.key} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  \u2190 ${entry.file}:${entry.line}` }, `${entry.key}-${entry.file}-${entry.line}`)),
-        query && searchMatches.length === 0 ? /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u672A\u627E\u5230\u5339\u914D\u53D8\u91CF" }) : null,
+        query && searchMatches.length === 0 ? /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "No matching variable found" }) : null,
         /* @__PURE__ */ jsx10(BackButton, {})
       ] }) : null,
       view === "path" ? /* @__PURE__ */ jsxs8(Box8, { flexDirection: "column", children: [
@@ -1171,12 +1171,12 @@ function EnvModule({ onBack }) {
         /* @__PURE__ */ jsx10(
           EditableField,
           {
-            label: "\u8F93\u5165 file,key,value\uFF0C\u4F8B\uFF1A~/.zshrc,OPENAI_API_KEY,sk-...",
+            label: "Enter file,key,value, e.g. ~/.zshrc,OPENAI_API_KEY,sk-...",
             placeholder: "~/.zshrc,EDITOR,code",
             onSubmit: async (value) => {
               const [filePath, key, nextValue] = value.split(",").map((part) => part.trim());
               if (!filePath || !key || !nextValue) {
-                setMessage("\u8BF7\u8F93\u5165 file\u3001key \u548C value\u3002");
+                setMessage("Please enter file, key, and value.");
                 return;
               }
               setPending(await prepareEnvChange(filePath, key, nextValue));
@@ -1184,7 +1184,7 @@ function EnvModule({ onBack }) {
             }
           }
         ),
-        /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u4FEE\u6539\u540E\u8BF7\u91CD\u65B0 source \u5BF9\u5E94 shell \u6587\u4EF6\u6216\u91CD\u5F00\u7EC8\u7AEF\u3002" }),
+        /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "After editing, re-source the shell file or restart the terminal." }),
         /* @__PURE__ */ jsx10(BackButton, {})
       ] }) : null,
       view === "confirm" && pending ? /* @__PURE__ */ jsx10(
@@ -1198,7 +1198,7 @@ function EnvModule({ onBack }) {
           },
           onConfirm: async () => {
             await pending.execute();
-            setMessage("\u73AF\u5883\u53D8\u91CF\u6587\u4EF6\u5DF2\u66F4\u65B0\u3002\u8BF7\u6267\u884C source \u6216\u91CD\u65B0\u6253\u5F00\u7EC8\u7AEF\u3002");
+            setMessage("Environment variable file updated. Run source or reopen the terminal.");
             setPending(null);
             setView("menu");
             await refresh();
@@ -1211,7 +1211,7 @@ function EnvModule({ onBack }) {
       ] }) : null
     ] }),
     message ? /* @__PURE__ */ jsx10(Box8, { marginTop: 1, children: /* @__PURE__ */ jsx10(Text10, { color: "#3fb950", children: message }) }) : null,
-    /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "Tab \u5207\u6362\u654F\u611F\u503C\u663E\u793A/\u9690\u85CF" })
+    /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "Tab toggles sensitive values on/off" })
   ] });
 }
 
@@ -1269,7 +1269,7 @@ var CHINA_MIRRORS = {
 async function detectBinary(name, args) {
   const result = await runCommand(name, args);
   if (!result.ok) {
-    return { name, version: "\u672A\u5B89\u88C5", installed: false };
+    return { name, version: "Not installed", installed: false };
   }
   const version = (result.stdout || result.stderr).split("\n")[0];
   return { name, version, installed: true };
@@ -1292,10 +1292,10 @@ async function loadNodeSummary() {
   const majorMatch = node.version.match(/^v(\d+)\./);
   const nodeMajor = majorMatch ? Number(majorMatch[1]) : null;
   const health = [
-    node.installed && nodeMajor !== null && nodeMajor >= 18 ? { status: "ok", message: "Node.js LTS \u7248\u672C" } : { status: "error", message: "Node.js \u672A\u5B89\u88C5\u6216\u7248\u672C\u8FC7\u4F4E" },
-    nvm.installed ? { status: "ok", message: "nvm \u5DF2\u5B89\u88C5\uFF0C\u7BA1\u7406 Node \u7248\u672C" } : { status: "warn", message: "nvm \u672A\u5B89\u88C5" },
-    registry === CHINA_MIRRORS.npm.mirror ? { status: "warn", message: "npm registry \u4E3A\u4E2D\u56FD\u955C\u50CF\uFF08\u56FD\u9645\u9879\u76EE\u53EF\u80FD\u9700\u8981\u5207\u6362\uFF09" } : { status: "ok", message: "npm registry \u4F7F\u7528\u5B98\u65B9\u6E90" },
-    yarn.installed ? { status: "ok", message: "yarn \u5DF2\u5B89\u88C5" } : { status: "error", message: "yarn \u672A\u5B89\u88C5" }
+    node.installed && nodeMajor !== null && nodeMajor >= 18 ? { status: "ok", message: "Node.js LTS version" } : { status: "error", message: "Node.js not installed or too old" },
+    nvm.installed ? { status: "ok", message: "nvm installed, managing Node versions" } : { status: "warn", message: "nvm not installed" },
+    registry === CHINA_MIRRORS.npm.mirror ? { status: "warn", message: "npm registry is using a China mirror (international projects may need a switch)" } : { status: "ok", message: "npm registry uses the official source" },
+    yarn.installed ? { status: "ok", message: "yarn installed" } : { status: "error", message: "yarn not installed" }
   ];
   return {
     binaries: [
@@ -1331,36 +1331,36 @@ function NodeModule({ onBack }) {
     void refresh();
   }, []);
   if (loading || !summary) {
-    return /* @__PURE__ */ jsx11(Layout, { title: "DevHub \u2014 Node.js \u751F\u6001", subtitle: "\u{1F49A} Node.js \u751F\u6001", children: /* @__PURE__ */ jsx11(Text11, { color: "#58a6ff", children: "\u68C0\u6D4B Node.js \u751F\u6001\u4E2D..." }) });
+    return /* @__PURE__ */ jsx11(Layout, { title: "DevHub \u2014 Node.js Ecosystem", subtitle: "\u{1F49A} Node.js Ecosystem", children: /* @__PURE__ */ jsx11(Text11, { color: "#58a6ff", children: "Loading Node.js ecosystem..." }) });
   }
-  return /* @__PURE__ */ jsxs9(Layout, { title: "DevHub \u2014 Node.js \u751F\u6001", subtitle: "\u{1F49A} Node.js \u751F\u6001", children: [
-    /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 \u73AF\u5883\u68C0\u6D4B \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+  return /* @__PURE__ */ jsxs9(Layout, { title: "DevHub \u2014 Node.js Ecosystem", subtitle: "\u{1F49A} Node.js Ecosystem", children: [
+    /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 Environment Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
     summary.binaries.map((binary, index) => /* @__PURE__ */ jsx11(Text11, { children: `${binary.name.padEnd(12)} ${binary.version.padEnd(12)} ${binary.installed ? "\u2713" : "\u2717"}${binary.detail ? ` (${binary.detail})` : ""}` }, `${binary.name}-${index}`)),
     /* @__PURE__ */ jsxs9(Box9, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 npm \u914D\u7F6E \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 npm Config \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       /* @__PURE__ */ jsx11(Text11, { children: `registry    ${summary.registry}` }),
       /* @__PURE__ */ jsx11(Text11, { children: `prefix      ${process.env.npm_config_prefix ?? "~/.npm-global"}` }),
       /* @__PURE__ */ jsx11(Text11, { children: `cache       ${process.env.npm_config_cache ?? "~/.npm"}` })
     ] }),
     /* @__PURE__ */ jsxs9(Box9, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 \u5065\u5EB7\u68C0\u67E5 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       summary.health.map((item, index) => /* @__PURE__ */ jsxs9(Box9, { children: [
         /* @__PURE__ */ jsx11(StatusBadge, { variant: item.status }),
         /* @__PURE__ */ jsx11(Text11, { children: ` ${item.message}` })
       ] }, `${item.status}-${item.message}-${index}`))
     ] }),
     /* @__PURE__ */ jsxs9(Box9, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 \u64CD\u4F5C \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       view === "menu" ? /* @__PURE__ */ jsx11(
         MenuList,
         {
           items: [
-            { label: "\u5207\u6362 npm registry\uFF08\u5B98\u65B9/\u6DD8\u5B9D\u955C\u50CF\u4E00\u952E\u5207\u6362\uFF09", value: "registry" },
-            { label: "\u5B89\u88C5/\u66F4\u65B0 Node.js\uFF08\u901A\u8FC7 nvm\uFF09", value: "install" },
-            { label: "\u5B89\u88C5\u5305\u7BA1\u7406\u5668\uFF08pnpm/yarn/bun\uFF09", value: "pkg-manager" },
-            { label: "\u67E5\u770B\u5168\u5C40\u5B89\u88C5\u7684\u5305", value: "packages" },
-            { label: "\u6E05\u7406 npm \u7F13\u5B58", value: "cache" },
-            { label: "\u2190 \u8FD4\u56DE\u4E3B\u83DC\u5355", value: "back" }
+            { label: "Switch npm registry (official/China mirror)", value: "registry" },
+            { label: "Install/update Node.js (via nvm)", value: "install" },
+            { label: "Install package managers (pnpm/yarn/bun)", value: "pkg-manager" },
+            { label: "View globally installed packages", value: "packages" },
+            { label: "Clear npm cache", value: "cache" },
+            { label: "\u2190 Back to main menu", value: "back" }
           ],
           onSelect: async (value) => {
             if (value === "back") {
@@ -1369,7 +1369,7 @@ function NodeModule({ onBack }) {
             }
             if (value === "cache") {
               const result = await runCommand("npm", ["cache", "clean", "--force"], 15e3);
-              setMessage(result.ok ? result.stdout || "npm cache \u5DF2\u6E05\u7406\u3002" : result.stderr);
+              setMessage(result.ok ? result.stdout || "npm cache cleared." : result.stderr);
               await refresh();
               return;
             }
@@ -1387,12 +1387,12 @@ function NodeModule({ onBack }) {
         /* @__PURE__ */ jsx11(
           EditableField,
           {
-            label: "\u8F93\u5165 official \u6216 china",
+            label: "Enter official or china",
             placeholder: "official",
             onSubmit: async (value) => {
               const registry = value.trim() === "china" ? CHINA_MIRRORS.npm.mirror : CHINA_MIRRORS.npm.official;
               const result = await runCommand("npm", ["config", "set", "registry", registry], 1e4);
-              setMessage(result.ok ? `npm registry \u5DF2\u5207\u6362\u5230 ${registry}` : result.stderr);
+              setMessage(result.ok ? `npm registry switched to ${registry}` : result.stderr);
               setView("menu");
               await refresh();
             }
@@ -1404,7 +1404,7 @@ function NodeModule({ onBack }) {
         /* @__PURE__ */ jsx11(
           EditableField,
           {
-            label: "\u8F93\u5165\u547D\u4EE4\u7C7B\u578B\uFF1Alts / pnpm / yarn / bun",
+            label: "Enter install target: lts / pnpm / yarn / bun",
             placeholder: "lts",
             onSubmit: async (value) => {
               let result;
@@ -1422,9 +1422,9 @@ function NodeModule({ onBack }) {
                   result = await runCommand("npm", ["install", "-g", "bun"], 12e4);
                   break;
                 default:
-                  result = { ok: false, stdout: "", stderr: "\u4E0D\u652F\u6301\u7684\u5B89\u88C5\u76EE\u6807\u3002", code: 1, command: value };
+                  result = { ok: false, stdout: "", stderr: "Unsupported install target.", code: 1, command: value };
               }
-              setMessage(result.ok ? result.stdout || "\u64CD\u4F5C\u5B8C\u6210\u3002" : result.stderr);
+              setMessage(result.ok ? result.stdout || "Operation complete." : result.stderr);
               setView("menu");
               await refresh();
             }
@@ -1433,11 +1433,11 @@ function NodeModule({ onBack }) {
         /* @__PURE__ */ jsx11(BackButton, {})
       ] }) : null,
       view === "packages" ? /* @__PURE__ */ jsxs9(Box9, { flexDirection: "column", children: [
-        /* @__PURE__ */ jsx11(Text11, { children: globalPackages || "(\u65E0\u8F93\u51FA)" }),
+        /* @__PURE__ */ jsx11(Text11, { children: globalPackages || "(no output)" }),
         /* @__PURE__ */ jsx11(BackButton, {})
       ] }) : null
     ] }),
-    message ? /* @__PURE__ */ jsx11(Box9, { marginTop: 1, children: /* @__PURE__ */ jsx11(Text11, { color: message === "\u4E0D\u652F\u6301\u7684\u5B89\u88C5\u76EE\u6807\u3002" ? "#f85149" : "#3fb950", children: message }) }) : null
+    message ? /* @__PURE__ */ jsx11(Box9, { marginTop: 1, children: /* @__PURE__ */ jsx11(Text11, { color: message === "Unsupported install target." ? "#f85149" : "#3fb950", children: message }) }) : null
   ] });
 }
 
@@ -1450,7 +1450,7 @@ var TOOL_REGISTRY = [
   {
     id: "nvm",
     name: "nvm",
-    description: "Node \u7248\u672C\u7BA1\u7406\u5668",
+    description: "Node version manager",
     category: "version-manager",
     detect: { command: "nvm --version" },
     install: {
@@ -1463,23 +1463,23 @@ var TOOL_REGISTRY = [
         mirror: CHINA_MIRRORS.nvm.mirror
       }
     },
-    postInstall: ["\u91CD\u5F00\u7EC8\u7AEF\u6216 source shell rc \u6587\u4EF6\u540E\u518D\u4F7F\u7528 nvm\u3002"]
+    postInstall: ["Reopen the terminal or source your shell rc file before using nvm."]
   },
   {
     id: "fnm",
     name: "fnm",
-    description: "\u5FEB\u901F Node \u7248\u672C\u7BA1\u7406\u5668\uFF08Rust\uFF09",
+    description: "Fast Node version manager (Rust)",
     category: "version-manager",
     detect: { command: "fnm --version" },
     install: {
       official: { brew: "brew install fnm" },
-      china: { mirror: CHINA_MIRRORS.githubRelease.mirror, note: "\u5982 GitHub Release \u8F83\u6162\uFF0C\u53EF\u901A\u8FC7 ghproxy \u52A0\u901F\u3002" }
+      china: { mirror: CHINA_MIRRORS.githubRelease.mirror, note: "If GitHub Releases are slow, ghproxy can speed them up." }
     }
   },
   {
     id: "pyenv",
     name: "pyenv",
-    description: "Python \u7248\u672C\u7BA1\u7406\u5668",
+    description: "Python version manager",
     category: "version-manager",
     detect: { command: "pyenv --version" },
     install: { official: { brew: "brew install pyenv" } }
@@ -1487,7 +1487,7 @@ var TOOL_REGISTRY = [
   {
     id: "rbenv",
     name: "rbenv",
-    description: "Ruby \u7248\u672C\u7BA1\u7406\u5668",
+    description: "Ruby version manager",
     category: "version-manager",
     detect: { command: "rbenv --version" },
     install: { official: { brew: "brew install rbenv" } }
@@ -1495,18 +1495,18 @@ var TOOL_REGISTRY = [
   {
     id: "homebrew",
     name: "Homebrew",
-    description: "macOS/Linux \u5305\u7BA1\u7406\u5668",
+    description: "macOS/Linux package manager",
     category: "package-manager",
     detect: { command: "brew --version" },
     install: {
       official: { script: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"' },
-      china: { mirror: CHINA_MIRRORS.homebrew.mirror, note: "\u5EFA\u8BAE\u7ED3\u5408\u6E05\u534E\u955C\u50CF\u914D\u7F6E HOMEBREW_BREW_GIT_REMOTE\u3002" }
+      china: { mirror: CHINA_MIRRORS.homebrew.mirror, note: "Consider pairing it with Tsinghua mirror settings for HOMEBREW_BREW_GIT_REMOTE." }
     }
   },
   {
     id: "pnpm",
     name: "pnpm",
-    description: "\u9AD8\u6548\u7684 Node \u5305\u7BA1\u7406\u5668",
+    description: "Efficient Node package manager",
     category: "package-manager",
     detect: { command: "pnpm -v" },
     install: { official: { brew: "brew install pnpm", script: "npm install -g pnpm" } }
@@ -1514,27 +1514,27 @@ var TOOL_REGISTRY = [
   {
     id: "bun",
     name: "bun",
-    description: "All-in-one JS \u8FD0\u884C\u65F6",
+    description: "All-in-one JS runtime",
     category: "package-manager",
     detect: { command: "bun --version" },
     install: { official: { brew: "brew install bun" } }
   },
   ...[
-    ["git", "\u7248\u672C\u63A7\u5236"],
-    ["curl", "HTTP \u5BA2\u6237\u7AEF"],
-    ["wget", "\u6587\u4EF6\u4E0B\u8F7D\u5DE5\u5177"],
-    ["jq", "JSON \u5904\u7406\u5668"],
-    ["fzf", "\u6A21\u7CCA\u641C\u7D22"],
-    ["ripgrep", "\u9AD8\u901F\u6587\u672C\u641C\u7D22"],
-    ["bat", "\u589E\u5F3A\u7248 cat"],
-    ["eza", "\u589E\u5F3A\u7248 ls"],
-    ["zoxide", "\u667A\u80FD cd"],
-    ["starship", "\u7EC8\u7AEF\u63D0\u793A\u7B26"],
-    ["tmux", "\u7EC8\u7AEF\u590D\u7528\u5668"],
-    ["neovim", "\u7F16\u8F91\u5668"],
+    ["git", "Version control"],
+    ["curl", "HTTP client"],
+    ["wget", "File downloader"],
+    ["jq", "JSON processor"],
+    ["fzf", "Fuzzy finder"],
+    ["ripgrep", "Fast text search"],
+    ["bat", "Enhanced cat"],
+    ["eza", "Enhanced ls"],
+    ["zoxide", "Smart cd"],
+    ["starship", "Terminal prompt"],
+    ["tmux", "Terminal multiplexer"],
+    ["neovim", "Editor"],
     ["lazygit", "Git TUI"],
     ["lazydocker", "Docker TUI"],
-    ["claude-code", "AI \u7F16\u7A0B\u52A9\u624B"]
+    ["claude-code", "AI coding assistant"]
   ].map(
     ([id, description]) => ({
       id,
@@ -1560,11 +1560,11 @@ function ToolsModule({ onBack }) {
     })),
     []
   );
-  return /* @__PURE__ */ jsxs10(Layout, { title: "DevHub \u2014 \u5DE5\u5177\u5B89\u88C5", subtitle: "\u{1F4E5} \u5E38\u7528\u5F00\u53D1\u5DE5\u5177\u5B89\u88C5", children: [
+  return /* @__PURE__ */ jsxs10(Layout, { title: "DevHub \u2014 Tool Installation", subtitle: "\u{1F4E5} Common Developer Tool Installation", children: [
     view === "list" ? /* @__PURE__ */ jsx12(
       MenuList,
       {
-        items: [...items, { label: "\u2190 \u8FD4\u56DE\u4E3B\u83DC\u5355", value: "back" }],
+        items: [...items, { label: "\u2190 Back to main menu", value: "back" }],
         onSelect: (value) => {
           if (value === "back") {
             onBack();
@@ -1580,28 +1580,28 @@ function ToolsModule({ onBack }) {
       /* @__PURE__ */ jsx12(Text12, { children: `\u{1F4E5} ${selectedTool.name} \u2014 ${selectedTool.description}` }),
       /* @__PURE__ */ jsxs10(Box10, { marginTop: 1, flexDirection: "column", children: [
         /* @__PURE__ */ jsxs10(Text12, { children: [
-          "\u72B6\u6001: \u68C0\u6D4B\u547D\u4EE4 ` ",
+          "Status: probe command ` ",
           selectedTool.detect.command,
           " `"
         ] }),
-        /* @__PURE__ */ jsx12(Text12, { color: "#6e7681", children: "\u2500\u2500 \u5B89\u88C5\u65B9\u5F0F \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-        selectedTool.install.official.script ? /* @__PURE__ */ jsx12(Text12, { children: `\u5B98\u65B9\u5B89\u88C5\u811A\u672C: ${selectedTool.install.official.script}` }) : null,
+        /* @__PURE__ */ jsx12(Text12, { color: "#6e7681", children: "\u2500\u2500 Installation Methods \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+        selectedTool.install.official.script ? /* @__PURE__ */ jsx12(Text12, { children: `Official install script: ${selectedTool.install.official.script}` }) : null,
         selectedTool.install.official.brew ? /* @__PURE__ */ jsx12(Text12, { children: `Homebrew: ${selectedTool.install.official.brew}` }) : null,
         selectedTool.install.official.apt ? /* @__PURE__ */ jsx12(Text12, { children: `apt: ${selectedTool.install.official.apt}` }) : null,
-        selectedTool.install.china?.script ? /* @__PURE__ */ jsx12(Text12, { children: `\u4E2D\u56FD\u955C\u50CF: ${selectedTool.install.china.script}` }) : null,
-        selectedTool.install.china?.mirror ? /* @__PURE__ */ jsx12(Text12, { children: `\u955C\u50CF\u5730\u5740: ${selectedTool.install.china.mirror}` }) : null,
+        selectedTool.install.china?.script ? /* @__PURE__ */ jsx12(Text12, { children: `China mirror: ${selectedTool.install.china.script}` }) : null,
+        selectedTool.install.china?.mirror ? /* @__PURE__ */ jsx12(Text12, { children: `Mirror URL: ${selectedTool.install.china.mirror}` }) : null,
         selectedTool.install.china?.note ? /* @__PURE__ */ jsx12(Text12, { color: "#d29922", children: selectedTool.install.china.note }) : null
       ] }),
       /* @__PURE__ */ jsxs10(Box10, { marginTop: 1, flexDirection: "column", children: [
-        /* @__PURE__ */ jsx12(Text12, { color: "#6e7681", children: "\u2500\u2500 \u64CD\u4F5C \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+        /* @__PURE__ */ jsx12(Text12, { color: "#6e7681", children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
         /* @__PURE__ */ jsx12(
           MenuList,
           {
             items: [
-              { label: "\u590D\u5236\u5B89\u88C5\u547D\u4EE4\u5230\u526A\u8D34\u677F", value: "copy" },
-              { label: "\u76F4\u63A5\u6267\u884C\u5B89\u88C5\uFF08\u5B98\u65B9\uFF09", value: "official" },
-              { label: "\u76F4\u63A5\u6267\u884C\u5B89\u88C5\uFF08\u4E2D\u56FD\u955C\u50CF\uFF09", value: "china" },
-              { label: "\u2190 \u8FD4\u56DE\u5DE5\u5177\u5217\u8868", value: "back" }
+              { label: "Copy install command to clipboard", value: "copy" },
+              { label: "Run install directly (official)", value: "official" },
+              { label: "Run install directly (China mirror)", value: "china" },
+              { label: "\u2190 Back to tool list", value: "back" }
             ],
             onSelect: async (value) => {
               if (value === "back") {
@@ -1612,17 +1612,17 @@ function ToolsModule({ onBack }) {
               const chinaCommand = selectedTool.install.china?.script ?? selectedTool.install.china?.mirror ?? "";
               const command = value === "china" ? chinaCommand : officialCommand || chinaCommand;
               if (!command) {
-                setMessage("\u8BE5\u5DE5\u5177\u7F3A\u5C11\u5BF9\u5E94\u5B89\u88C5\u547D\u4EE4\u3002");
+                setMessage("This tool does not have a matching install command.");
                 return;
               }
               if (value === "copy") {
                 const copyShell = process.platform === "darwin" ? `printf %s ${JSON.stringify(command)} | pbcopy` : `printf %s ${JSON.stringify(command)} | (xclip -selection clipboard || wl-copy)`;
                 const copyResult = await runCommand("bash", ["-lc", copyShell], 4e3);
-                setMessage(copyResult.ok ? "\u5B89\u88C5\u547D\u4EE4\u5DF2\u590D\u5236\u5230\u526A\u8D34\u677F\u3002" : `\u590D\u5236\u5931\u8D25\uFF0C\u8BF7\u624B\u52A8\u590D\u5236: ${command}`);
+                setMessage(copyResult.ok ? "Install command copied to clipboard." : `Copy failed, please copy manually: ${command}`);
                 return;
               }
               const result = await runCommand("bash", ["-lc", command], 12e4);
-              setMessage(result.ok ? result.stdout || "\u5B89\u88C5\u547D\u4EE4\u6267\u884C\u5B8C\u6210\u3002" : result.stderr);
+              setMessage(result.ok ? result.stdout || "Install command finished." : result.stderr);
               setView("execute");
             }
           }
@@ -1630,10 +1630,10 @@ function ToolsModule({ onBack }) {
       ] })
     ] }) : null,
     view === "execute" ? /* @__PURE__ */ jsxs10(Box10, { flexDirection: "column", children: [
-      /* @__PURE__ */ jsx12(Text12, { children: message || "(\u65E0\u8F93\u51FA)" }),
+      /* @__PURE__ */ jsx12(Text12, { children: message || "(no output)" }),
       /* @__PURE__ */ jsx12(BackButton, {})
     ] }) : null,
-    message && view !== "execute" ? /* @__PURE__ */ jsx12(Box10, { marginTop: 1, children: /* @__PURE__ */ jsx12(Text12, { color: message.includes("\u5931\u8D25") ? "#f85149" : "#3fb950", children: message }) }) : null
+    message && view !== "execute" ? /* @__PURE__ */ jsx12(Box10, { marginTop: 1, children: /* @__PURE__ */ jsx12(Text12, { color: message.includes("failed") ? "#f85149" : "#3fb950", children: message }) }) : null
   ] });
 }
 
@@ -1674,21 +1674,21 @@ function App() {
   if (route === "tools") {
     return /* @__PURE__ */ jsx13(ToolsModule, { onBack: () => setRoute("main") });
   }
-  return /* @__PURE__ */ jsxs11(Layout, { title: "DevHub \u2014 \u5F00\u53D1\u73AF\u5883\u914D\u7F6E\u7BA1\u7406", subtitle: "\u8BF7\u9009\u62E9\u8981\u7BA1\u7406\u7684\u914D\u7F6E\uFF1A", children: [
+  return /* @__PURE__ */ jsxs11(Layout, { title: "DevHub \u2014 Development Environment Manager", subtitle: "Select a module to manage:", children: [
     /* @__PURE__ */ jsx13(
       MenuList,
       {
         items: [
-          { label: "\u{1F4E6} Git \u914D\u7F6E", value: "git", description: "~/.gitconfig \u7BA1\u7406" },
-          { label: "\u{1F510} SSH \u914D\u7F6E", value: "ssh", description: "\u5BC6\u94A5\u4E0E\u4E3B\u673A\u7BA1\u7406" },
-          { label: "\u{1F511} \u73AF\u5883\u53D8\u91CF", value: "env", description: "Shell \u53D8\u91CF\u6EAF\u6E90" },
-          { label: "\u{1F49A} Node.js \u751F\u6001", value: "node", description: "Node/npm/nvm/pnpm" },
-          { label: "\u{1F4E5} \u5DE5\u5177\u5B89\u88C5", value: "tools", description: "\u5E38\u7528\u5F00\u53D1\u5DE5\u5177 + \u4E2D\u56FD\u955C\u50CF" }
+          { label: "\u{1F4E6} Git Config", value: "git", description: "Manage ~/.gitconfig" },
+          { label: "\u{1F510} SSH Config", value: "ssh", description: "SSH key & host management" },
+          { label: "\u{1F511} Environment Variables", value: "env", description: "Shell variable provenance" },
+          { label: "\u{1F49A} Node.js Ecosystem", value: "node", description: "Node/npm/nvm/pnpm" },
+          { label: "\u{1F4E5} Tool Installation", value: "tools", description: "Common dev tools + China mirrors" }
         ],
         onSelect: (value) => setRoute(value)
       }
     ),
-    /* @__PURE__ */ jsx13(Text13, { color: "#6e7681", children: "\u2191\u2193 \u5BFC\u822A  \u23CE \u8FDB\u5165  q \u9000\u51FA" })
+    /* @__PURE__ */ jsx13(Text13, { color: "#6e7681", children: "\u2191\u2193 Navigate  \u23CE Open  q Quit" })
   ] });
 }
 

@@ -42,20 +42,20 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
 
   if (loading || !summary || !overview) {
     return (
-      <Layout title="DevHub — Git 配置" subtitle="📦 Git 配置    ~/.gitconfig">
-        <Text color="#58a6ff">加载 Git 配置中...</Text>
+      <Layout title="DevHub — Git Config" subtitle="📦 Git Config    ~/.gitconfig">
+        <Text color="#58a6ff">Loading Git config...</Text>
       </Layout>
     );
   }
 
   const actions = [
-    {label: '修改用户名/邮箱', value: 'identity'},
-    {label: '修改默认编辑器', value: 'editor'},
-    {label: '修改默认分支名', value: 'branch'},
-    {label: '配置常用 alias', value: 'alias'},
-    {label: '配置 pull 策略', value: 'pull'},
-    {label: '查看完整配置（raw）', value: 'raw'},
-    {label: '← 返回主菜单', value: 'back'},
+    {label: 'Edit username/email', value: 'identity'},
+    {label: 'Edit default editor', value: 'editor'},
+    {label: 'Edit default branch name', value: 'branch'},
+    {label: 'Set common aliases', value: 'alias'},
+    {label: 'Set pull strategy', value: 'pull'},
+    {label: 'View full config (raw)', value: 'raw'},
+    {label: '← Back to main menu', value: 'back'},
   ] as const;
 
   const submitSingleChange = async (key: string, currentValue: string, nextValue: string) => {
@@ -64,17 +64,17 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
   };
 
   return (
-    <Layout title="DevHub — Git 配置" subtitle="📦 Git 配置    ~/.gitconfig">
-      <Text color="#6e7681">── 当前配置预览 ──────────────────────</Text>
-      <KeyValue label="用户名" value={overview.userName} muted={overview.userName === '(未设置)'} />
-      <KeyValue label="邮箱" value={overview.userEmail} muted={overview.userEmail === '(未设置)'} />
-      <KeyValue label="默认编辑器" value={overview.defaultEditor} muted={overview.defaultEditor === '(未设置)'} />
-      <KeyValue label="默认分支" value={overview.defaultBranch} muted={overview.defaultBranch === '(未设置)'} />
-      <KeyValue label="pull 策略" value={overview.pullStrategy} muted={overview.pullStrategy === '(未设置)'} />
-      <KeyValue label="凭证存储" value={overview.credentialHelper} muted={overview.credentialHelper === '(未设置)'} />
+    <Layout title="DevHub — Git Config" subtitle="📦 Git Config    ~/.gitconfig">
+      <Text color="#6e7681">── Current Config Preview ──────────────────────</Text>
+      <KeyValue label="Username" value={overview.userName} muted={overview.userName === '(not set)'} />
+      <KeyValue label="Email" value={overview.userEmail} muted={overview.userEmail === '(not set)'} />
+      <KeyValue label="Default Editor" value={overview.defaultEditor} muted={overview.defaultEditor === '(not set)'} />
+      <KeyValue label="Default Branch" value={overview.defaultBranch} muted={overview.defaultBranch === '(not set)'} />
+      <KeyValue label="Pull Strategy" value={overview.pullStrategy} muted={overview.pullStrategy === '(not set)'} />
+      <KeyValue label="Credential Helper" value={overview.credentialHelper} muted={overview.credentialHelper === '(not set)'} />
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── 健康检查 ──────────────────────────</Text>
+        <Text color="#6e7681">── Health Check ──────────────────────────</Text>
         {summary.health.map((item, index) => (
           <Box key={`${item.status}-${item.message}-${index}`}>
             <StatusBadge variant={item.status} />
@@ -84,7 +84,7 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── 操作 ──────────────────────────────</Text>
+        <Text color="#6e7681">── Actions ──────────────────────────────</Text>
         {view === 'menu' ? (
           <MenuList
             items={actions}
@@ -118,15 +118,15 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
         {view === 'edit' && selectedAction === 'identity' ? (
           <Box flexDirection="column" gap={1}>
             <EditableField
-              label={`当前用户名: ${overview.userName}`}
+              label={`Current username: ${overview.userName}`}
               defaultValue={summary.globalConfig.user?.name}
-              placeholder="新的 Git 用户名"
+              placeholder="New Git username"
               onSubmit={(value) => void submitSingleChange('user.name', summary.globalConfig.user?.name ?? '', value)}
             />
             <EditableField
-              label={`当前邮箱: ${overview.userEmail}`}
+              label={`Current email: ${overview.userEmail}`}
               defaultValue={summary.globalConfig.user?.email}
-              placeholder="新的 Git 邮箱"
+              placeholder="New Git email"
               onSubmit={(value) => void submitSingleChange('user.email', summary.globalConfig.user?.email ?? '', value)}
             />
             <BackButton />
@@ -136,9 +136,9 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
         {view === 'edit' && selectedAction === 'editor' ? (
           <Box flexDirection="column" gap={1}>
             <EditableField
-              label={`当前默认编辑器: ${overview.defaultEditor}`}
+              label={`Current default editor: ${overview.defaultEditor}`}
               defaultValue={summary.globalConfig.core?.editor}
-              placeholder="例如 code --wait"
+              placeholder="e.g. code --wait"
               onSubmit={(value) => void submitSingleChange('core.editor', summary.globalConfig.core?.editor ?? '', value)}
             />
             <BackButton />
@@ -148,7 +148,7 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
         {view === 'edit' && selectedAction === 'branch' ? (
           <Box flexDirection="column" gap={1}>
             <EditableField
-              label={`当前默认分支: ${overview.defaultBranch}`}
+              label={`Current default branch: ${overview.defaultBranch}`}
               defaultValue={summary.globalConfig.init?.defaultBranch ?? 'main'}
               placeholder="main"
               onSubmit={(value) => void submitSingleChange('init.defaultBranch', summary.globalConfig.init?.defaultBranch ?? '', value)}
@@ -160,7 +160,7 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
         {view === 'edit' && selectedAction === 'pull' ? (
           <Box flexDirection="column" gap={1}>
             <EditableField
-              label={`当前 pull 策略: ${overview.pullStrategy}`}
+              label={`Current pull strategy: ${overview.pullStrategy}`}
               defaultValue={summary.globalConfig.pull?.rebase ?? 'true'}
               placeholder="true / false / merges"
               onSubmit={(value) => void submitSingleChange('pull.rebase', summary.globalConfig.pull?.rebase ?? '', value)}
@@ -179,7 +179,7 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
             }}
             onConfirm={async () => {
               const result = await executeGitChange(pending);
-              setMessage(result.ok ? result.stdout || '更新成功。' : `执行失败: ${result.stderr}`);
+              setMessage(result.ok ? result.stdout || 'Updated successfully.' : `Failed: ${result.stderr}`);
               setPending(null);
               setView('menu');
               await refresh();
@@ -196,7 +196,7 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
 
         {message ? (
           <Box marginTop={1}>
-            <Text color={message.startsWith('执行失败') ? '#f85149' : '#3fb950'}>{message}</Text>
+            <Text color={message.startsWith('Failed') ? '#f85149' : '#3fb950'}>{message}</Text>
           </Box>
         ) : null}
         {error ? <Text color="#f85149">{error}</Text> : null}

@@ -79,7 +79,7 @@ export function MenuList({
     <Box flexDirection="column">
       {isSearching ? (
         <Box marginBottom={1}>
-          <Text color="#58a6ff">搜索: </Text>
+          <Text color="#58a6ff">Search: </Text>
           <TextInput defaultValue={query} onChange={setQuery} onSubmit={() => setIsSearching(false)} />
         </Box>
       ) : null}
@@ -93,9 +93,9 @@ export function MenuList({
           </Box>
         );
       })}
-      {filteredItems.length === 0 ? <Text color="#6e7681">无匹配项</Text> : null}
+      {filteredItems.length === 0 ? <Text color="#6e7681">No matches</Text> : null}
       <Box marginTop={1}>
-        <Text color="#6e7681">↑↓ / j k 导航  Enter 进入  / 搜索</Text>
+        <Text color="#6e7681">↑↓ / j k Navigate  Enter Open  / Search</Text>
       </Box>
     </Box>
   );

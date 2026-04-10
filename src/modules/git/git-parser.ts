@@ -63,40 +63,40 @@ export async function loadGitConfig(cwd = process.cwd()): Promise<GitConfigSumma
   const localConfig = localRaw ? parseGitConfig(localRaw) : null;
   const platform = detectPlatform();
   const preview = {
-    userName: globalConfig.user?.name ?? '(未设置)',
-    userEmail: globalConfig.user?.email ?? '(未设置)',
-    defaultEditor: globalConfig.core?.editor ?? '(未设置)',
-    defaultBranch: globalConfig.init?.defaultBranch ?? '(未设置)',
-    pullStrategy: globalConfig.pull?.rebase ?? '(未设置)',
-    credentialHelper: globalConfig.credential?.helper ?? '(未设置)',
+    userName: globalConfig.user?.name ?? '(not set)',
+    userEmail: globalConfig.user?.email ?? '(not set)',
+    defaultEditor: globalConfig.core?.editor ?? '(not set)',
+    defaultBranch: globalConfig.init?.defaultBranch ?? '(not set)',
+    pullStrategy: globalConfig.pull?.rebase ?? '(not set)',
+    credentialHelper: globalConfig.credential?.helper ?? '(not set)',
   };
 
   const health: HealthItem[] = [
     globalConfig.user?.name
-      ? {status: 'ok', message: 'user.name 已配置'}
-      : {status: 'error', message: 'user.name 未配置'},
+      ? {status: 'ok', message: 'user.name configured'}
+      : {status: 'error', message: 'user.name not configured'},
     globalConfig.user?.email
-      ? {status: 'ok', message: 'user.email 已配置'}
-      : {status: 'error', message: 'user.email 未配置'},
+      ? {status: 'ok', message: 'user.email configured'}
+      : {status: 'error', message: 'user.email not configured'},
     globalConfig.init?.defaultBranch === 'main'
       ? {status: 'ok', message: 'init.defaultBranch = main'}
-      : {status: 'warn', message: 'init.defaultBranch 建议设置为 main'},
+      : {status: 'warn', message: 'init.defaultBranch should be set to main'},
     globalConfig.core?.autocrlf
       ? {status: 'ok', message: `core.autocrlf = ${globalConfig.core.autocrlf}`}
       : {
           status: 'warn',
-          message: `core.autocrlf 未设置（建议 ${platform === 'Windows' ? 'true' : 'input'}）`,
+          message: `core.autocrlf not set (recommended: ${platform === 'Windows' ? 'true' : 'input'})`,
         },
     globalConfig.pull?.rebase
       ? {status: 'ok', message: `pull.rebase = ${globalConfig.pull.rebase}`}
-      : {status: 'warn', message: 'pull.rebase 未设置'},
+      : {status: 'warn', message: 'pull.rebase not set'},
     globalConfig.commit?.gpgsign || globalConfig.gpg?.format || globalConfig.user?.signingkey
-      ? {status: 'ok', message: '检测到 signing 相关配置'}
-      : {status: 'warn', message: '未检测到 GPG/SSH signing 配置'},
+      ? {status: 'ok', message: 'Signing-related config detected'}
+      : {status: 'warn', message: 'No GPG/SSH signing config detected'},
   ];
 
   if (await pathExists(localPath)) {
-    health.push({status: 'info', message: `检测到 local config: ${localPath}`});
+    health.push({status: 'info', message: `Local config detected: ${localPath}`});
   }
 
   return {

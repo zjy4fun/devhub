@@ -32,7 +32,7 @@ export function ConfirmDialog({
         <Text>{diff}</Text>
       </Box>
       <Box marginTop={1}>
-        <Text color="#d29922">按 `y` / `Enter` 确认，按 `n` / `Esc` 取消</Text>
+        <Text color="#d29922">Press `y` / `Enter` to confirm, `n` / `Esc` to cancel</Text>
       </Box>
     </Box>
   );

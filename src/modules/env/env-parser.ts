@@ -51,9 +51,9 @@ export function getShellFiles(shellPath: string, cwd = process.cwd()): readonly 
       path: filePath,
       exists: false,
       current: filePath.includes(shellName),
-      note: filePath.includes(shellName) ? '(当前 shell)' : undefined,
+      note: filePath.includes(shellName) ? '(current shell)' : undefined,
     })),
-    {path: path.join(cwd, '.env'), exists: false, current: false, note: '(当前目录)'},
+    {path: path.join(cwd, '.env'), exists: false, current: false, note: '(current directory)'},
   ];
 }
 

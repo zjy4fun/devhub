@@ -58,18 +58,18 @@ export function App() {
   }
 
   return (
-    <Layout title="DevHub — 开发环境配置管理" subtitle="请选择要管理的配置：">
+    <Layout title="DevHub — Development Environment Manager" subtitle="Select a module to manage:">
       <MenuList
         items={[
-          {label: '📦 Git 配置', value: 'git', description: '~/.gitconfig 管理'},
-          {label: '🔐 SSH 配置', value: 'ssh', description: '密钥与主机管理'},
-          {label: '🔑 环境变量', value: 'env', description: 'Shell 变量溯源'},
-          {label: '💚 Node.js 生态', value: 'node', description: 'Node/npm/nvm/pnpm'},
-          {label: '📥 工具安装', value: 'tools', description: '常用开发工具 + 中国镜像'},
+          {label: '📦 Git Config', value: 'git', description: 'Manage ~/.gitconfig'},
+          {label: '🔐 SSH Config', value: 'ssh', description: 'SSH key & host management'},
+          {label: '🔑 Environment Variables', value: 'env', description: 'Shell variable provenance'},
+          {label: '💚 Node.js Ecosystem', value: 'node', description: 'Node/npm/nvm/pnpm'},
+          {label: '📥 Tool Installation', value: 'tools', description: 'Common dev tools + China mirrors'},
         ]}
         onSelect={(value) => setRoute(value as Route)}
       />
-      <Text color="#6e7681">↑↓ 导航  ⏎ 进入  q 退出</Text>
+      <Text color="#6e7681">↑↓ Navigate  ⏎ Open  q Quit</Text>
     </Layout>
   );
 }

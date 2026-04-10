@@ -68,15 +68,15 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
 
   if (loading || !summary) {
     return (
-      <Layout title="DevHub — 环境变量" subtitle="🔑 环境变量管理">
-        <Text color="#58a6ff">加载环境变量配置中...</Text>
+      <Layout title="DevHub — Environment Variables" subtitle="🔑 Environment Variable Management">
+        <Text color="#58a6ff">Loading environment variable config...</Text>
       </Layout>
     );
   }
 
   return (
-    <Layout title="DevHub — 环境变量" subtitle="🔑 环境变量管理">
-      <Text color="#6e7681">── 检测到的 Shell 配置文件 ────────────</Text>
+    <Layout title="DevHub — Environment Variables" subtitle="🔑 Environment Variable Management">
+      <Text color="#6e7681">── Detected Shell Config Files ────────────</Text>
       {summary.files.map((file) => (
         <Text key={file.path} color={file.exists ? '#f0f6fc' : '#6e7681'}>
           {`${file.exists ? '✓' : ' '} ${file.path}${file.note ? `  ${file.note}` : ''}`}
@@ -84,7 +84,7 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
       ))}
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── 环境变量概览 ──────────────────────</Text>
+        <Text color="#6e7681">── Environment Overview ──────────────────────</Text>
         {effectiveEntries.slice(0, 8).map((entry) => (
           <Text key={`${entry.key}-${entry.file}-${entry.line}`}>
             {`${entry.key.padEnd(20)} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  ← ${entry.file}:${entry.line}`}
@@ -93,50 +93,50 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── 健康检查 ──────────────────────────</Text>
+        <Text color="#6e7681">── Health Check ──────────────────────────</Text>
         {summary.duplicates.map((key) => (
           <Box key={`duplicate-${key}`}>
             <StatusBadge variant="warn" />
-            <Text>{` ${key} 重复定义`}</Text>
+            <Text>{` ${key} defined multiple times`}</Text>
           </Box>
         ))}
         {summary.missingPathEntries.map((entry) => (
           <Box key={`missing-path-${entry}`}>
             <StatusBadge variant="warn" />
-            <Text>{` PATH 中包含不存在的目录: ${entry}`}</Text>
+            <Text>{` PATH includes a missing directory: ${entry}`}</Text>
           </Box>
         ))}
         {summary.effectiveMap.get('EDITOR') ? (
           <Box>
             <StatusBadge variant="ok" />
-            <Text> EDITOR 已设置</Text>
+            <Text> EDITOR is set</Text>
           </Box>
         ) : (
           <Box>
             <StatusBadge variant="warn" />
-            <Text> EDITOR 未设置</Text>
+            <Text> EDITOR is not set</Text>
           </Box>
         )}
         {summary.effectiveMap.get('LANG')?.value === 'en_US.UTF-8' ? (
           <Box>
             <StatusBadge variant="ok" />
-            <Text> LANG 已设置为 en_US.UTF-8</Text>
+            <Text> LANG is set to en_US.UTF-8</Text>
           </Box>
         ) : null}
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── 操作 ──────────────────────────────</Text>
+        <Text color="#6e7681">── Actions ──────────────────────────────</Text>
         {view === 'menu' ? (
           <MenuList
             items={[
-              {label: '搜索变量（输入变量名溯源）', value: 'search'},
-              {label: '查看 PATH 详情', value: 'path'},
-              {label: '添加新环境变量', value: 'add'},
-              {label: '修改已有变量', value: 'edit'},
-              {label: '检查重复定义', value: 'dupes'},
-              {label: '查看原始文件', value: 'raw'},
-              {label: '← 返回主菜单', value: 'back'},
+              {label: 'Search variables (trace by variable name)', value: 'search'},
+              {label: 'View PATH details', value: 'path'},
+              {label: 'Add a new environment variable', value: 'add'},
+              {label: 'Edit an existing variable', value: 'edit'},
+              {label: 'Check duplicate definitions', value: 'dupes'},
+              {label: 'View raw files', value: 'raw'},
+              {label: '← Back to main menu', value: 'back'},
             ]}
             onSelect={(value) => {
               if (value === 'back') {
@@ -157,13 +157,13 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
 
         {view === 'search' ? (
           <Box flexDirection="column" gap={1}>
-            <EditableField label="输入变量名" placeholder="OPENAI_API_KEY" defaultValue={query} onSubmit={setQuery} />
+            <EditableField label="Enter variable name" placeholder="OPENAI_API_KEY" defaultValue={query} onSubmit={setQuery} />
             {searchMatches.map((entry) => (
               <Text key={`${entry.key}-${entry.file}-${entry.line}`}>
                 {`${entry.key} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  ← ${entry.file}:${entry.line}`}
               </Text>
             ))}
-            {query && searchMatches.length === 0 ? <Text color="#6e7681">未找到匹配变量</Text> : null}
+            {query && searchMatches.length === 0 ? <Text color="#6e7681">No matching variable found</Text> : null}
             <BackButton />
           </Box>
         ) : null}
@@ -185,12 +185,12 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
         {view === 'edit' ? (
           <Box flexDirection="column" gap={1}>
             <EditableField
-              label="输入 file,key,value，例：~/.zshrc,OPENAI_API_KEY,sk-..."
+              label="Enter file,key,value, e.g. ~/.zshrc,OPENAI_API_KEY,sk-..."
               placeholder="~/.zshrc,EDITOR,code"
               onSubmit={async (value) => {
                 const [filePath, key, nextValue] = value.split(',').map((part) => part.trim());
                 if (!filePath || !key || !nextValue) {
-                  setMessage('请输入 file、key 和 value。');
+                  setMessage('Please enter file, key, and value.');
                   return;
                 }
 
@@ -198,7 +198,7 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
                 setView('confirm');
               }}
             />
-            <Text color="#6e7681">修改后请重新 source 对应 shell 文件或重开终端。</Text>
+            <Text color="#6e7681">After editing, re-source the shell file or restart the terminal.</Text>
             <BackButton />
           </Box>
         ) : null}
@@ -213,7 +213,7 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
             }}
             onConfirm={async () => {
               await pending.execute();
-              setMessage('环境变量文件已更新。请执行 source 或重新打开终端。');
+              setMessage('Environment variable file updated. Run source or reopen the terminal.');
               setPending(null);
               setView('menu');
               await refresh();
@@ -238,7 +238,7 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
           <Text color="#3fb950">{message}</Text>
         </Box>
       ) : null}
-      <Text color="#6e7681">Tab 切换敏感值显示/隐藏</Text>
+      <Text color="#6e7681">Tab toggles sensitive values on/off</Text>
     </Layout>
   );
 }

@@ -27,10 +27,10 @@ export function ToolsModule({onBack}: {readonly onBack: () => void}) {
   );
 
   return (
-    <Layout title="DevHub — 工具安装" subtitle="📥 常用开发工具安装">
+    <Layout title="DevHub — Tool Installation" subtitle="📥 Common Developer Tool Installation">
       {view === 'list' ? (
         <MenuList
-          items={[...items, {label: '← 返回主菜单', value: 'back'}]}
+          items={[...items, {label: '← Back to main menu', value: 'back'}]}
           onSelect={(value) => {
             if (value === 'back') {
               onBack();
@@ -48,23 +48,23 @@ export function ToolsModule({onBack}: {readonly onBack: () => void}) {
         <Box flexDirection="column">
           <Text>{`📥 ${selectedTool.name} — ${selectedTool.description}`}</Text>
           <Box marginTop={1} flexDirection="column">
-            <Text>状态: 检测命令 ` {selectedTool.detect.command} `</Text>
-            <Text color="#6e7681">── 安装方式 ────────────────────────</Text>
-            {selectedTool.install.official.script ? <Text>{`官方安装脚本: ${selectedTool.install.official.script}`}</Text> : null}
+            <Text>Status: probe command ` {selectedTool.detect.command} `</Text>
+            <Text color="#6e7681">── Installation Methods ────────────────────────</Text>
+            {selectedTool.install.official.script ? <Text>{`Official install script: ${selectedTool.install.official.script}`}</Text> : null}
             {selectedTool.install.official.brew ? <Text>{`Homebrew: ${selectedTool.install.official.brew}`}</Text> : null}
             {selectedTool.install.official.apt ? <Text>{`apt: ${selectedTool.install.official.apt}`}</Text> : null}
-            {selectedTool.install.china?.script ? <Text>{`中国镜像: ${selectedTool.install.china.script}`}</Text> : null}
-            {selectedTool.install.china?.mirror ? <Text>{`镜像地址: ${selectedTool.install.china.mirror}`}</Text> : null}
+            {selectedTool.install.china?.script ? <Text>{`China mirror: ${selectedTool.install.china.script}`}</Text> : null}
+            {selectedTool.install.china?.mirror ? <Text>{`Mirror URL: ${selectedTool.install.china.mirror}`}</Text> : null}
             {selectedTool.install.china?.note ? <Text color="#d29922">{selectedTool.install.china.note}</Text> : null}
           </Box>
           <Box marginTop={1} flexDirection="column">
-            <Text color="#6e7681">── 操作 ────────────────────────────</Text>
+            <Text color="#6e7681">── Actions ────────────────────────────</Text>
             <MenuList
               items={[
-                {label: '复制安装命令到剪贴板', value: 'copy'},
-                {label: '直接执行安装（官方）', value: 'official'},
-                {label: '直接执行安装（中国镜像）', value: 'china'},
-                {label: '← 返回工具列表', value: 'back'},
+                {label: 'Copy install command to clipboard', value: 'copy'},
+                {label: 'Run install directly (official)', value: 'official'},
+                {label: 'Run install directly (China mirror)', value: 'china'},
+                {label: '← Back to tool list', value: 'back'},
               ]}
               onSelect={async (value) => {
                 if (value === 'back') {
@@ -78,7 +78,7 @@ export function ToolsModule({onBack}: {readonly onBack: () => void}) {
                 const command = value === 'china' ? chinaCommand : officialCommand || chinaCommand;
 
                 if (!command) {
-                  setMessage('该工具缺少对应安装命令。');
+                  setMessage('This tool does not have a matching install command.');
                   return;
                 }
 
@@ -88,12 +88,12 @@ export function ToolsModule({onBack}: {readonly onBack: () => void}) {
                       ? `printf %s ${JSON.stringify(command)} | pbcopy`
                       : `printf %s ${JSON.stringify(command)} | (xclip -selection clipboard || wl-copy)`;
                   const copyResult = await runCommand('bash', ['-lc', copyShell], 4_000);
-                  setMessage(copyResult.ok ? '安装命令已复制到剪贴板。' : `复制失败，请手动复制: ${command}`);
+                  setMessage(copyResult.ok ? 'Install command copied to clipboard.' : `Copy failed, please copy manually: ${command}`);
                   return;
                 }
 
                 const result = await runCommand('bash', ['-lc', command], 120_000);
-                setMessage(result.ok ? result.stdout || '安装命令执行完成。' : result.stderr);
+                setMessage(result.ok ? result.stdout || 'Install command finished.' : result.stderr);
                 setView('execute');
               }}
             />
@@ -103,14 +103,14 @@ export function ToolsModule({onBack}: {readonly onBack: () => void}) {
 
       {view === 'execute' ? (
         <Box flexDirection="column">
-          <Text>{message || '(无输出)'}</Text>
+          <Text>{message || '(no output)'}</Text>
           <BackButton />
         </Box>
       ) : null}
 
       {message && view !== 'execute' ? (
         <Box marginTop={1}>
-          <Text color={message.includes('失败') ? '#f85149' : '#3fb950'}>{message}</Text>
+          <Text color={message.includes('failed') ? '#f85149' : '#3fb950'}>{message}</Text>
         </Box>
       ) : null}
     </Layout>

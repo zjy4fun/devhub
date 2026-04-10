@@ -21,11 +21,11 @@ export async function prepareHostConfigAppend(hostAlias: string, hostName: strin
   const block = ['', `Host ${sanitizeInput(hostAlias)}`, `  HostName ${sanitizeInput(hostName)}`, `  User ${sanitizeInput(user)}`, '  Port 22', `  IdentityFile ${sanitizeInput(identityFile)}`, ''].join('\n');
   const next = current.endsWith('\n') || current.length === 0 ? `${current}${block}` : `${current}\n${block}`;
   return {
-    title: '确认更新 SSH 主机配置',
+    title: 'Confirm SSH host config update',
     diff: createDiffPreview(current, next),
     execute: async () => {
       await writeTextFile(configPath, next);
-      return {ok: true, stdout: 'SSH config 已更新。', stderr: ''};
+      return {ok: true, stdout: 'SSH config updated.', stderr: ''};
     },
   };
 }

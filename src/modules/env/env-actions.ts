@@ -30,7 +30,7 @@ export async function prepareEnvChange(filePath: string, key: string, value: str
   }
 
   return {
-    title: `确认更新环境变量 ${safeKey}`,
+    title: `Confirm update environment variable ${safeKey}`,
     diff: createDiffPreview(current, next),
     execute: async () => {
       await writeTextFile(filePath, next);

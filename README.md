@@ -1,14 +1,14 @@
 # 🛠 DevHub
 
-> 开发环境配置的 X 光机 + 控制面板
+> X-ray machine and control panel for development environment config
 
-**[📖 文档 & 演示](https://zjy4fun.github.io/devhub/)**
+**[📖 Docs & Demo](https://zjy4fun.github.io/devhub/)**
 
-DevHub 是一个 TypeScript + Ink TUI 工具，帮助开发者从一个终端入口快速查看、检查、修改本地开发环境配置。
+DevHub is a TypeScript + Ink TUI tool that helps developers inspect, check, and edit local development environment config from one terminal entry point.
 
-不是又一个 dotfiles 同步工具 — 而是帮你回答「**我的配置到底是什么状态**」和「**我该改哪里**」。
+It is not another dotfiles sync tool. It helps answer: "What state is my config in?" and "What should I change?"
 
-## 快速开始
+## Quick Start
 
 ```bash
 npx @zjy4fun/devhub
@@ -19,42 +19,42 @@ pnpm add -g @zjy4fun/devhub
 devhub
 ```
 
-## 功能模块
+## Feature Modules
 
-### 📦 Git 配置
-- 查看 `~/.gitconfig` 配置预览
-- 健康检查：user.name/email、defaultBranch、autocrlf、GPG signing
-- 引导式修改：用户名/邮箱、编辑器、默认分支、pull 策略、alias
+### 📦 Git Config
+- Preview `~/.gitconfig`
+- Health checks: user.name/email, defaultBranch, autocrlf, GPG signing
+- Guided edits: username/email, editor, default branch, pull strategy, aliases
 
-### 🔐 SSH 配置
-- 密钥扫描：类型、agent 状态、文件权限
-- 主机配置：解析 `~/.ssh/config`，展示 Host → IdentityFile 映射
-- 健康检查：目录权限 700、config 权限 600、私钥权限 600、引用文件一致性
-- 操作：生成密钥、添加到 agent、编辑 Host、测试连接、一键修复权限
+### 🔐 SSH Config
+- Key scan: type, agent status, file permissions
+- Host config: parse `~/.ssh/config` and show Host → IdentityFile mapping
+- Health checks: directory mode 700, config mode 600, private key mode 600, referenced file consistency
+- Actions: generate keys, add to agent, edit host, test connections, repair permissions
 
-### 🔑 环境变量
-- Shell 配置文件检测（zsh/bash/fish）
-- 变量溯源：每个变量来自哪个文件的哪一行
-- PATH 拆解分析：标注不存在的路径
-- 重复定义检测、敏感值遮罩（Tab 切换显示）
-- 修改后提醒 source
+### 🔑 Environment Variables
+- Shell config detection (zsh/bash/fish)
+- Variable provenance: which file and which line each variable came from
+- PATH analysis: flag missing directories
+- Duplicate definition detection, sensitive value masking (toggle with Tab)
+- Reminder to source after editing
 
-### 💚 Node.js 生态
-- 检测 Node/npm/pnpm/yarn/bun/nvm/fnm
-- Node 来源检测（nvm vs 系统安装）
-- npm registry 一键切换（官方 / 淘宝镜像）
-- 全局包列表、缓存清理
+### 💚 Node.js Ecosystem
+- Detect Node/npm/pnpm/yarn/bun/nvm/fnm
+- Detect Node source (nvm vs system install)
+- One-click npm registry switch (official / China mirror)
+- Global package list, cache cleanup
 
-### 📥 工具安装引导
-- 22+ 常用开发工具：nvm、pyenv、Homebrew、pnpm、fzf、ripgrep、bat、lazygit、Claude Code...
-- 每个工具：检测是否安装 + 官方/镜像安装命令
-- 复制到剪贴板 / 直接执行安装
+### 📥 Tool Installation Guide
+- 22+ common dev tools: nvm, pyenv, Homebrew, pnpm, fzf, ripgrep, bat, lazygit, Claude Code...
+- Per tool: install detection plus official/mirror install commands
+- Copy to clipboard or run directly
 
-## 🇨🇳 中国镜像
+## 🇨🇳 China Mirrors
 
-内置镜像源地址，含来源和验证日期：
+Built-in mirror URLs with source and verification date:
 
-| 工具 | 镜像 |
+| Tool | Mirror |
 |------|------|
 | npm | registry.npmmirror.com |
 | Homebrew | mirrors.tuna.tsinghua.edu.cn |
@@ -64,7 +64,7 @@ devhub
 | nvm | gitee.com/mirrors/nvm |
 | GitHub Release | ghproxy.com |
 
-## 支持的配置文件
+## Supported Config Files
 
 - `~/.gitconfig` / `.git/config`
 - `~/.ssh/config` / `~/.ssh/*`
@@ -74,7 +74,7 @@ devhub
 - `.env`
 - `~/.npmrc`
 
-## 技术栈
+## Tech Stack
 
 - **TypeScript** (strict mode)
 - **Ink** (React-based terminal UI)
@@ -82,13 +82,13 @@ devhub
 - **tsup** (build)
 - **zod** (schema validation)
 
-## 开发
+## Development
 
 ```bash
 pnpm install
-pnpm dev      # 开发模式运行
-pnpm build    # 构建
-pnpm start    # 运行构建产物
+pnpm dev      # Run in development mode
+pnpm build    # Build
+pnpm start    # Run the built output
 ```
 
 ## License

@@ -31,7 +31,7 @@ export function Layout({
         {children}
       </Box>
       <Box marginTop={1}>
-        {footer ?? <Text color="#6e7681">q 退出  Esc 返回  Ctrl+C 强制退出</Text>}
+        {footer ?? <Text color="#6e7681">q Quit  Esc Back  Ctrl+C Force exit</Text>}
       </Box>
     </Box>
   );

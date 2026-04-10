@@ -29,7 +29,7 @@ export interface NodeSummary {
 async function detectBinary(name: string, args: readonly string[]): Promise<BinaryStatus> {
   const result = await runCommand(name, args);
   if (!result.ok) {
-    return {name, version: '未安装', installed: false};
+    return {name, version: 'Not installed', installed: false};
   }
 
   const version = (result.stdout || result.stderr).split('\n')[0];
@@ -58,15 +58,15 @@ export async function loadNodeSummary(): Promise<NodeSummary> {
   const nodeMajor = majorMatch ? Number(majorMatch[1]) : null;
   const health = [
     node.installed && nodeMajor !== null && nodeMajor >= 18
-      ? {status: 'ok' as const, message: 'Node.js LTS 版本'}
-      : {status: 'error' as const, message: 'Node.js 未安装或版本过低'},
+      ? {status: 'ok' as const, message: 'Node.js LTS version'}
+      : {status: 'error' as const, message: 'Node.js not installed or too old'},
     nvm.installed
-      ? {status: 'ok' as const, message: 'nvm 已安装，管理 Node 版本'}
-      : {status: 'warn' as const, message: 'nvm 未安装'},
+      ? {status: 'ok' as const, message: 'nvm installed, managing Node versions'}
+      : {status: 'warn' as const, message: 'nvm not installed'},
     registry === CHINA_MIRRORS.npm.mirror
-      ? {status: 'warn' as const, message: 'npm registry 为中国镜像（国际项目可能需要切换）'}
-      : {status: 'ok' as const, message: 'npm registry 使用官方源'},
-    yarn.installed ? {status: 'ok' as const, message: 'yarn 已安装'} : {status: 'error' as const, message: 'yarn 未安装'},
+      ? {status: 'warn' as const, message: 'npm registry is using a China mirror (international projects may need a switch)'}
+      : {status: 'ok' as const, message: 'npm registry uses the official source'},
+    yarn.installed ? {status: 'ok' as const, message: 'yarn installed'} : {status: 'error' as const, message: 'yarn not installed'},
   ];
 
   return {

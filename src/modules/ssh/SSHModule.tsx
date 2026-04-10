@@ -34,32 +34,32 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
 
   if (loading || !summary) {
     return (
-      <Layout title="DevHub — SSH 配置" subtitle="🔐 SSH 配置    ~/.ssh/">
-        <Text color="#58a6ff">加载 SSH 配置中...</Text>
+      <Layout title="DevHub — SSH Config" subtitle="🔐 SSH Config    ~/.ssh/">
+        <Text color="#58a6ff">Loading SSH config...</Text>
       </Layout>
     );
   }
 
   return (
-    <Layout title="DevHub — SSH 配置" subtitle="🔐 SSH 配置    ~/.ssh/">
-      <Text color="#6e7681">── 密钥列表 ──────────────────────────</Text>
-      {summary.keys.length === 0 ? <Text color="#6e7681">未检测到密钥文件</Text> : null}
+    <Layout title="DevHub — SSH Config" subtitle="🔐 SSH Config    ~/.ssh/">
+      <Text color="#6e7681">── Key List ──────────────────────────</Text>
+      {summary.keys.length === 0 ? <Text color="#6e7681">No key files detected</Text> : null}
       {summary.keys.map((key, index) => (
         <Text key={`${key.name}-${key.path}-${index}`}>
-          {`🔑 ${key.name}    ${key.type}  ${key.agentLoaded ? '✓ agent已加载' : '✗ agent未加载'}  ${key.privateMode === '0600' ? '✓ 权限600' : `⚠ 权限${key.privateMode}`}`}
+          {`🔑 ${key.name}    ${key.type}  ${key.agentLoaded ? '✓ agent loaded' : '✗ agent not loaded'}  ${key.privateMode === '0600' ? '✓ mode 600' : `⚠ mode ${key.privateMode}`}`}
         </Text>
       ))}
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── 主机配置 ──────────────────────────</Text>
-      {summary.hosts.length === 0 ? <Text color="#6e7681">未检测到 Host 配置</Text> : null}
+        <Text color="#6e7681">── Host Config ──────────────────────────</Text>
+      {summary.hosts.length === 0 ? <Text color="#6e7681">No Host config detected</Text> : null}
         {summary.hosts.map((host, index) => (
           <Text key={`${host.host}-${host.hostname}-${index}`}>{`${host.host}     → ${host.user}@${host.hostname}:${host.port} (${host.identityFile ?? 'no IdentityFile'})`}</Text>
         ))}
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── 健康检查 ──────────────────────────</Text>
+        <Text color="#6e7681">── Health Check ──────────────────────────</Text>
         {summary.health.map((item, index) => (
           <Box key={`${item.status}-${item.message}-${index}`}>
             <StatusBadge variant={item.status} />
@@ -69,17 +69,17 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── 操作 ──────────────────────────────</Text>
+        <Text color="#6e7681">── Actions ──────────────────────────────</Text>
         {view === 'menu' ? (
           <MenuList
             items={[
-              {label: '生成新密钥对', value: 'generate'},
-              {label: '添加密钥到 ssh-agent', value: 'add-agent'},
-              {label: '编辑主机配置', value: 'edit-host'},
-              {label: '测试主机连接', value: 'test'},
-              {label: '修复文件权限', value: 'fix'},
-              {label: '查看完整 config（raw）', value: 'raw'},
-              {label: '← 返回主菜单', value: 'back'},
+              {label: 'Generate new key pair', value: 'generate'},
+              {label: 'Add key to ssh-agent', value: 'add-agent'},
+              {label: 'Edit host config', value: 'edit-host'},
+              {label: 'Test host connection', value: 'test'},
+              {label: 'Fix file permissions', value: 'fix'},
+              {label: 'View full config (raw)', value: 'raw'},
+              {label: '← Back to main menu', value: 'back'},
             ]}
             onSelect={async (value) => {
               if (value === 'back') {
@@ -107,17 +107,17 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
         {view === 'generate' ? (
           <Box flexDirection="column" gap={1}>
             <EditableField
-              label="输入邮箱与新密钥文件名，格式：email,fileName"
+              label="Enter email and new key filename in the format: email,fileName"
               placeholder="name@example.com,id_work"
               onSubmit={async (value) => {
                 const [email, fileName] = value.split(',').map((part) => part.trim());
                 if (!email || !fileName) {
-                  setMessage('请输入邮箱和密钥文件名。');
+                  setMessage('Please enter an email and key filename.');
                   return;
                 }
 
                 const result = await generateSSHKey(email, fileName);
-                setMessage(result.ok ? result.stdout || '密钥已生成。' : result.stderr);
+                setMessage(result.ok ? result.stdout || 'Key generated.' : result.stderr);
                 setView('menu');
                 await refresh();
               }}
@@ -129,17 +129,17 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
         {view === 'add-agent' ? (
           <Box flexDirection="column" gap={1}>
             <EditableField
-              label="输入要添加到 agent 的密钥文件名"
+              label="Enter the key filename to add to the agent"
               placeholder="id_ed25519"
               defaultValue={selectedKey}
               onSubmit={async (value) => {
                 if (!value.trim()) {
-                  setMessage('请输入密钥文件名。');
+                  setMessage('Please enter a key filename.');
                   return;
                 }
 
                 const result = await addKeyToAgent(value);
-                setMessage(result.ok ? result.stdout || '已添加到 ssh-agent。' : result.stderr);
+                setMessage(result.ok ? result.stdout || 'Added to ssh-agent.' : result.stderr);
                 setView('menu');
                 await refresh();
               }}
@@ -151,12 +151,12 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
         {view === 'edit-host' ? (
           <Box flexDirection="column" gap={1}>
             <EditableField
-              label="输入主机配置，格式：alias,hostname,user,identityFile"
+              label="Enter host config in the format: alias,hostname,user,identityFile"
               placeholder="github-work,github.com,git,~/.ssh/id_work"
               onSubmit={async (value) => {
                 const [alias, hostName, user, identityFile] = value.split(',').map((part) => part.trim());
                 if (!alias || !hostName || !user || !identityFile) {
-                  setMessage('请输入 alias、hostname、user 和 identityFile。');
+                  setMessage('Please enter alias, hostname, user, and identityFile.');
                   return;
                 }
 
@@ -171,16 +171,16 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
         {view === 'test' ? (
           <Box flexDirection="column" gap={1}>
             <EditableField
-              label="输入要测试的 Host 别名"
+              label="Enter the Host alias to test"
               placeholder="github.com"
               onSubmit={async (value) => {
                 if (!value.trim()) {
-                  setMessage('请输入要测试的 Host 别名。');
+                  setMessage('Please enter the Host alias to test.');
                   return;
                 }
 
                 const result = await testSSHHost(value);
-                setMessage(result.ok ? result.stdout || result.stderr || '连接测试完成。' : result.stderr);
+                setMessage(result.ok ? result.stdout || result.stderr || 'Connection test complete.' : result.stderr);
                 setView('menu');
               }}
             />

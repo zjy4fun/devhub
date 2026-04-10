@@ -17,7 +17,7 @@ export async function prepareGitConfigChange(key: string, currentValue: string, 
   const safeKey = sanitizeInput(key);
   const safeValue = sanitizeInput(nextValue);
   return {
-    title: `确认更新 ${safeKey}`,
+    title: `Confirm update ${safeKey}`,
     command: ['config', '--global', safeKey, safeValue],
     diff: createDiffPreview(`${safeKey}=${currentValue}`, `${safeKey}=${safeValue}`),
   };
@@ -30,7 +30,7 @@ export function prepareGitAliasChange(): GitPendingChange {
   const before = '[alias]\n# no standard aliases detected';
   const after = ['[alias]', '  st = status -sb', '  co = checkout', '  br = branch', '  lg = log --oneline --graph --decorate'].join('\n');
   return {
-    title: '确认配置常用 alias',
+    title: 'Confirm common aliases',
     command: ['alias-batch'],
     diff: createDiffPreview(before, after),
   };

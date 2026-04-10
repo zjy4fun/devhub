@@ -158,20 +158,20 @@ export async function loadSSHSummary(): Promise<SSHSummary> {
   const configMode = (await pathExists(configPath)) ? toOctalMode((await fs.stat(configPath)).mode) : 'missing';
   const health: SSHHealthItem[] = [
     sshDirMode === '0700'
-      ? {status: 'ok', message: '~/.ssh 目录权限 700'}
-      : {status: 'warn', message: `~/.ssh 目录权限建议 700，当前 ${sshDirMode}`},
+      ? {status: 'ok', message: '~/.ssh directory mode 700'}
+      : {status: 'warn', message: `~/.ssh directory mode should be 700, current ${sshDirMode}`},
     configMode === '0600'
-      ? {status: 'ok', message: 'config 文件权限 600'}
-      : {status: 'warn', message: `config 文件权限建议 600，当前 ${configMode}`},
+      ? {status: 'ok', message: 'config file mode 600'}
+      : {status: 'warn', message: `config file mode should be 600, current ${configMode}`},
   ];
 
   for (const key of keys) {
     if (key.privateMode !== '0600') {
-      health.push({status: 'error', message: `${key.name} 私钥权限应为 600，当前 ${key.privateMode}`});
+      health.push({status: 'error', message: `${key.name} private key mode should be 600, current ${key.privateMode}`});
     }
 
     if (!key.agentLoaded) {
-      health.push({status: 'warn', message: `${key.name} 未加载到 ssh-agent`});
+      health.push({status: 'warn', message: `${key.name} is not loaded into ssh-agent`});
     }
   }
 
@@ -184,7 +184,7 @@ export async function loadSSHSummary(): Promise<SSHSummary> {
       ? expandHome(host.identityFile)
       : host.identityFile;
     if (!(await pathExists(resolvedIdentity))) {
-      health.push({status: 'warn', message: `config 中引用了 ${host.identityFile}，但该文件不存在`});
+      health.push({status: 'warn', message: `config references ${host.identityFile}, but that file does not exist`});
     }
   }
 
