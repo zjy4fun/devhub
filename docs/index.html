@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevHub — 开发环境配置管理 TUI</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #f0f6fc;
+      --text-secondary: #8b949e;
+      --green: #3fb950;
+      --blue: #58a6ff;
+      --purple: #bc8cff;
+      --yellow: #d29922;
+      --red: #f85149;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 80px 0 60px;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+    .hero h1 span { color: var(--purple); }
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 32px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+    .btn-primary { background: var(--purple); color: #fff; }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+
+    /* Install */
+    .install {
+      text-align: center;
+      padding: 40px 0;
+    }
+    .install-code {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 32px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 1.1rem;
+      color: var(--green);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .install-code:hover { border-color: var(--purple); }
+
+    /* Terminal Preview */
+    .terminal-section {
+      padding: 40px 0 60px;
+    }
+    .terminal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: #1c2128;
+      gap: 8px;
+    }
+    .terminal-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red { background: var(--red); }
+    .dot-yellow { background: var(--yellow); }
+    .dot-green { background: var(--green); }
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+    .terminal-body {
+      padding: 24px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .t-purple { color: var(--purple); }
+    .t-green { color: var(--green); }
+    .t-yellow { color: var(--yellow); }
+    .t-red { color: var(--red); }
+    .t-blue { color: var(--blue); }
+    .t-dim { color: var(--text-secondary); }
+
+    /* Features */
+    .features {
+      padding: 60px 0;
+    }
+    .features h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 40px;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+    .feature-card:hover { border-color: var(--purple); }
+    .feature-icon { font-size: 2rem; margin-bottom: 12px; }
+    .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .feature-card p { color: var(--text-secondary); font-size: 0.9rem; }
+
+    /* China Mirror */
+    .mirror {
+      padding: 40px 0 80px;
+      text-align: center;
+    }
+    .mirror h2 { font-size: 1.5rem; margin-bottom: 16px; }
+    .mirror p { color: var(--text-secondary); max-width: 500px; margin: 0 auto; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 1rem; }
+      .terminal-body { font-size: 0.75rem; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>🛠 <span>DevHub</span></h1>
+      <p>开发环境配置的 X 光机 + 控制面板。一个命令，管理你的 Git、SSH、环境变量、Node.js 和常用工具。</p>
+      <div class="hero-actions">
+        <a href="https://github.com/zjy4fun/devhub" class="btn btn-primary">GitHub</a>
+        <a href="#install" class="btn btn-secondary">快速开始</a>
+      </div>
+    </section>
+
+    <section class="install" id="install">
+      <div class="install-code" onclick="navigator.clipboard.writeText('npx devhub')">
+        $ npx devhub
+      </div>
+      <p style="color: var(--text-secondary); margin-top: 12px; font-size: 0.85rem;">点击复制 · 需要 Node.js ≥ 18</p>
+    </section>
+
+    <section class="terminal-section">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="terminal-dot dot-red"></div>
+          <div class="terminal-dot dot-yellow"></div>
+          <div class="terminal-dot dot-green"></div>
+          <div class="terminal-title">devhub — 80×24</div>
+        </div>
+        <div class="terminal-body">
+<span class="t-dim">╭─────────────────────────────────────╮</span>
+<span class="t-dim">│</span>  <span class="t-purple">🛠  DevHub — 开发环境配置管理</span>        <span class="t-dim">│</span>
+<span class="t-dim">│</span>  v0.1.0         macOS arm64          <span class="t-dim">│</span>
+<span class="t-dim">╰─────────────────────────────────────╯</span>
+
+  请选择要管理的配置：
+
+  <span class="t-purple">❯  📦 Git 配置</span>          <span class="t-dim">~/.gitconfig 管理</span>
+     🔐 SSH 配置          <span class="t-dim">密钥与主机管理</span>
+     🔑 环境变量          <span class="t-dim">Shell 变量溯源</span>
+     💚 Node.js 生态      <span class="t-dim">Node/npm/nvm/pnpm</span>
+     📥 工具安装          <span class="t-dim">常用开发工具 + 中国镜像</span>
+
+  <span class="t-dim">↑↓ 导航  ⏎ 进入  q 退出</span></div>
+      </div>
+    </section>
+
+    <section class="features">
+      <h2>功能模块</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📦</div>
+          <h3>Git 配置</h3>
+          <p>查看配置、健康检查、修改用户名邮箱、默认分支、pull 策略、GPG 签名提醒。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>SSH 配置</h3>
+          <p>密钥扫描、权限检查、agent 状态、主机配置、一键修复权限、生成密钥、测试连接。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔑</div>
+          <h3>环境变量</h3>
+          <p>变量溯源（哪个文件哪一行）、重复检测、PATH 拆解分析、敏感值遮罩。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💚</div>
+          <h3>Node.js 生态</h3>
+          <p>检测 Node/npm/pnpm/yarn/bun/nvm/fnm，npm registry 一键切换官方/淘宝镜像。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📥</div>
+          <h3>工具安装</h3>
+          <p>22+ 常用开发工具引导安装，内置中国镜像源，支持官方/镜像一键切换。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🇨🇳</div>
+          <h3>中国镜像</h3>
+          <p>npm、Homebrew、pip、rustup、Go、Docker、GitHub Release 镜像地址内置。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mirror">
+      <h2>🇨🇳 为中国开发者优化</h2>
+      <p>内置主流镜像源地址，npm/pip/Homebrew/Go/Rust 一键切换，不再为网络发愁。</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>MIT License · Built with TypeScript + <a href="https://github.com/vadimdemedes/ink">Ink</a> · <a href="https://github.com/zjy4fun/devhub">zjy4fun/devhub</a></p>
+  </footer>
+</body>
+</html>
