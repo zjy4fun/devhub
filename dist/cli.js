@@ -4,7 +4,7 @@
 import { render } from "ink";
 
 // src/app.tsx
-import { useEffect as useEffect7, useState as useState8 } from "react";
+import React8, { useEffect as useEffect7, useState as useState8 } from "react";
 import { Text as Text13, useApp, useInput as useInput4 } from "ink";
 
 // src/components/Layout.tsx
@@ -1651,7 +1651,12 @@ function App() {
       setRoute("main");
     }
   });
+  const isFirstRender = React8.useRef(true);
   useEffect7(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     process.stdout.write("\x1Bc");
   }, [route]);
   if (route === "git") {
