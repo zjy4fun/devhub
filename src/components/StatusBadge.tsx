@@ -1,5 +1,6 @@
 import React from 'react';
 import {Text} from 'ink';
+import {THEME} from '../theme.js';
 
 /**
  * Badge variants used across health check lists.
@@ -7,10 +8,10 @@ import {Text} from 'ink';
 export type StatusVariant = 'ok' | 'warn' | 'error' | 'info';
 
 const COLORS: Record<StatusVariant, string> = {
-  ok: '#3fb950',
-  warn: '#d29922',
-  error: '#f85149',
-  info: '#58a6ff',
+  ok: THEME.success,
+  warn: THEME.warning,
+  error: THEME.danger,
+  info: THEME.accent,
 };
 
 const LABELS: Record<StatusVariant, string> = {

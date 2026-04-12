@@ -6,10 +6,13 @@ import {ConfirmDialog} from '../../components/ConfirmDialog.js';
 import {EditableField} from '../../components/EditableField.js';
 import {BackButton} from '../../components/BackButton.js';
 import {StatusBadge} from '../../components/StatusBadge.js';
-import {prepareEnvChange, type EnvPendingChange} from './env-actions.js';
+import {prepareEnvChange, prepareEnvDoctorFix, type EnvPendingChange} from './env-actions.js';
 import {loadEnvSummary, type EnvSummary} from './env-parser.js';
+import {MutedText} from '../../components/MutedText.js';
+import {THEME} from '../../theme.js';
 
-type EnvView = 'menu' | 'search' | 'path' | 'edit' | 'confirm' | 'raw';
+type EnvView = 'menu' | 'search' | 'path' | 'doctor' | 'edit' | 'confirm' | 'raw';
+type MessageTone = 'success' | 'error' | 'info';
 
 /**
  * Masks sensitive values in default overview mode.
@@ -34,9 +37,15 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
   const [view, setView] = useState<EnvView>('menu');
   const [pending, setPending] = useState<EnvPendingChange | null>(null);
   const [message, setMessage] = useState('');
+  const [messageTone, setMessageTone] = useState<MessageTone>('success');
   const [query, setQuery] = useState('');
   const [showSecrets, setShowSecrets] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const showMessage = (text: string, tone: MessageTone = 'success') => {
+    setMessage(text);
+    setMessageTone(tone);
+  };
 
   useInput((input, key) => {
     if (key.tab) {
@@ -58,6 +67,17 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
     () => (summary ? Array.from(summary.effectiveMap.values()).sort((left, right) => left.key.localeCompare(right.key)) : []),
     [summary],
   );
+  const pathEntries = useMemo(
+    () => (summary ? summary.entries.filter((entry) => entry.key === 'PATH') : []),
+    [summary],
+  );
+  const pathIssueMap = useMemo(() => {
+    if (!summary) {
+      return new Map<string, EnvSummary['pathIssues'][number]>();
+    }
+
+    return new Map(summary.pathIssues.map((issue) => [`${issue.entry.file}:${issue.entry.line}:${issue.segment}`, issue]));
+  }, [summary]);
   const searchMatches = useMemo(() => {
     if (!summary || !query) {
       return [];
@@ -69,22 +89,24 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
   if (loading || !summary) {
     return (
       <Layout title="DevHub — Environment Variables" subtitle="🔑 Environment Variable Management">
-        <Text color="#58a6ff">Loading environment variable config...</Text>
+        <Text color={THEME.accent}>Loading environment variable config...</Text>
       </Layout>
     );
   }
 
+  const messageColor = messageTone === 'error' ? THEME.danger : messageTone === 'info' ? THEME.accent : THEME.success;
+
   return (
     <Layout title="DevHub — Environment Variables" subtitle="🔑 Environment Variable Management">
-      <Text color="#6e7681">── Detected Shell Config Files ────────────</Text>
+      <MutedText>── Detected Shell Config Files ────────────</MutedText>
       {summary.files.map((file) => (
-        <Text key={file.path} color={file.exists ? '#f0f6fc' : '#6e7681'}>
+        <Text key={file.path} dimColor={!file.exists}>
           {`${file.exists ? '✓' : ' '} ${file.path}${file.note ? `  ${file.note}` : ''}`}
         </Text>
       ))}
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── Environment Overview ──────────────────────</Text>
+        <MutedText>── Environment Overview ──────────────────────</MutedText>
         {effectiveEntries.slice(0, 8).map((entry) => (
           <Text key={`${entry.key}-${entry.file}-${entry.line}`}>
             {`${entry.key.padEnd(20)} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  ← ${entry.file}:${entry.line}`}
@@ -93,45 +115,37 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── Health Check ──────────────────────────</Text>
-        {summary.duplicates.map((key) => (
-          <Box key={`duplicate-${key}`}>
-            <StatusBadge variant="warn" />
-            <Text>{` ${key} defined multiple times`}</Text>
-          </Box>
-        ))}
-        {summary.missingPathEntries.map((entry) => (
-          <Box key={`missing-path-${entry}`}>
-            <StatusBadge variant="warn" />
-            <Text>{` PATH includes a missing directory: ${entry}`}</Text>
-          </Box>
-        ))}
-        {summary.effectiveMap.get('EDITOR') ? (
+        <MutedText>── Health Check ──────────────────────────</MutedText>
+        {summary.health.length === 0 ? (
           <Box>
             <StatusBadge variant="ok" />
-            <Text> EDITOR is set</Text>
+            <Text> No issues detected</Text>
           </Box>
         ) : (
-          <Box>
-            <StatusBadge variant="warn" />
-            <Text> EDITOR is not set</Text>
-          </Box>
+          summary.health.map((item, index) => (
+            <Box key={`${item.status}-${item.message}-${index}`}>
+              <StatusBadge variant={item.status} />
+              <Text>{` ${item.message}`}</Text>
+            </Box>
+          ))
         )}
-        {summary.effectiveMap.get('LANG')?.value === 'en_US.UTF-8' ? (
-          <Box>
-            <StatusBadge variant="ok" />
-            <Text> LANG is set to en_US.UTF-8</Text>
-          </Box>
-        ) : null}
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── Actions ──────────────────────────────</Text>
+        <MutedText>── Actions ──────────────────────────────</MutedText>
         {view === 'menu' ? (
           <MenuList
             items={[
               {label: 'Search variables (trace by variable name)', value: 'search'},
               {label: 'View PATH details', value: 'path'},
+              {
+                label: 'Doctor fix (safe remediation)',
+                value: 'doctor',
+                description:
+                  summary.doctorFixes.length > 0
+                    ? `${summary.doctorFixes.length} fix${summary.doctorFixes.length === 1 ? '' : 'es'} available`
+                    : 'No safe fixes available right now',
+              },
               {label: 'Add a new environment variable', value: 'add'},
               {label: 'Edit an existing variable', value: 'edit'},
               {label: 'Check duplicate definitions', value: 'dupes'},
@@ -145,8 +159,18 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
               }
 
               if (value === 'dupes') {
-                setQuery(summary.duplicates[0] ?? '');
+                setQuery(summary.duplicateIssues[0]?.key ?? '');
                 setView('search');
+                return;
+              }
+
+              if (value === 'doctor') {
+                if (summary.doctorFixes.length === 0) {
+                  showMessage('No safe doctor fixes available. Review the warnings manually.', 'info');
+                  return;
+                }
+
+                setView('doctor');
                 return;
               }
 
@@ -163,22 +187,75 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
                 {`${entry.key} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  ← ${entry.file}:${entry.line}`}
               </Text>
             ))}
-            {query && searchMatches.length === 0 ? <Text color="#6e7681">No matching variable found</Text> : null}
+            {query && searchMatches.length === 0 ? <MutedText>No matching variable found</MutedText> : null}
             <BackButton />
           </Box>
         ) : null}
 
         {view === 'path' ? (
-          <Box flexDirection="column">
-            {(summary.effectiveMap.get('PATH')?.value ?? process.env.PATH ?? '')
-              .split(':')
-              .filter(Boolean)
-              .map((segment: string, index) => (
-                <Text key={`${segment}-${index}`} color={summary.missingPathEntries.includes(segment) ? '#f85149' : '#f0f6fc'}>
-                  {segment}
-                </Text>
-              ))}
+          <Box flexDirection="column" gap={1}>
+            {pathEntries.length === 0 ? <MutedText>No PATH exports found in the scanned files</MutedText> : null}
+            {pathEntries.map((entry) => (
+              <Box key={`${entry.file}-${entry.line}`} flexDirection="column">
+                <MutedText>{`${entry.file}:${entry.line}`}</MutedText>
+                {entry.value
+                  .split(':')
+                  .map((segment) => segment.trim())
+                  .filter(Boolean)
+                  .map((segment, index) => {
+                    const issue = pathIssueMap.get(`${entry.file}:${entry.line}:${segment}`);
+                    const color =
+                      issue?.kind === 'missing-path'
+                        ? THEME.danger
+                        : issue?.kind === 'unresolved-path'
+                          ? THEME.warning
+                          : undefined;
+                    const detail =
+                      issue?.kind === 'missing-path' && issue.resolvedSegment && issue.resolvedSegment !== segment
+                        ? `  → ${issue.resolvedSegment}`
+                        : issue?.kind === 'unresolved-path'
+                          ? '  (unresolved reference)'
+                          : '';
+
+                    return (
+                      <Text key={`${entry.file}-${entry.line}-${segment}-${index}`} color={color}>
+                        {`${segment}${detail}`}
+                      </Text>
+                    );
+                  })}
+              </Box>
+            ))}
             <BackButton />
+          </Box>
+        ) : null}
+
+        {view === 'doctor' ? (
+          <Box flexDirection="column" gap={1}>
+            <MutedText>Doctor fix only offers deterministic edits and still shows a diff before writing.</MutedText>
+            <MenuList
+              items={[
+                ...summary.doctorFixes.map((fix) => ({
+                  label: fix.title,
+                  value: fix.id,
+                  description: fix.description,
+                })),
+                {label: '← Back to actions', value: 'back'},
+              ]}
+              onSelect={async (value) => {
+                if (value === 'back') {
+                  setView('menu');
+                  return;
+                }
+
+                try {
+                  setPending(await prepareEnvDoctorFix(summary, value));
+                  setView('confirm');
+                } catch (error) {
+                  showMessage(error instanceof Error ? error.message : 'Failed to prepare doctor fix.', 'error');
+                  setView('menu');
+                }
+              }}
+            />
           </Box>
         ) : null}
 
@@ -186,11 +263,11 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
           <Box flexDirection="column" gap={1}>
             <EditableField
               label="Enter file,key,value, e.g. ~/.zshrc,OPENAI_API_KEY,sk-..."
-              placeholder="~/.zshrc,EDITOR,code"
+              placeholder="~/.zshrc,EDITOR,code --wait"
               onSubmit={async (value) => {
                 const [filePath, key, nextValue] = value.split(',').map((part) => part.trim());
                 if (!filePath || !key || !nextValue) {
-                  setMessage('Please enter file, key, and value.');
+                  showMessage('Please enter file, key, and value.', 'error');
                   return;
                 }
 
@@ -198,7 +275,7 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
                 setView('confirm');
               }}
             />
-            <Text color="#6e7681">After editing, re-source the shell file or restart the terminal.</Text>
+            <MutedText>After editing, re-source the shell file or restart the terminal.</MutedText>
             <BackButton />
           </Box>
         ) : null}
@@ -213,7 +290,7 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
             }}
             onConfirm={async () => {
               await pending.execute();
-              setMessage('Environment variable file updated. Run source or reopen the terminal.');
+              showMessage('Environment variable config updated. Run source or reopen the terminal.');
               setPending(null);
               setView('menu');
               await refresh();
@@ -235,10 +312,10 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
 
       {message ? (
         <Box marginTop={1}>
-          <Text color="#3fb950">{message}</Text>
+          <Text color={messageColor}>{message}</Text>
         </Box>
       ) : null}
-      <Text color="#6e7681">Tab toggles sensitive values on/off</Text>
+      <MutedText>Tab toggles sensitive values on/off</MutedText>
     </Layout>
   );
 }

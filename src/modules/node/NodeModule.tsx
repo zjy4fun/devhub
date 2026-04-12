@@ -8,6 +8,8 @@ import {loadNodeSummary, type NodeSummary} from './node-checker.js';
 import {runCommand} from '../../utils/shell.js';
 import {CHINA_MIRRORS} from '../../utils/china-mirror.js';
 import {BackButton} from '../../components/BackButton.js';
+import {MutedText} from '../../components/MutedText.js';
+import {THEME} from '../../theme.js';
 
 type NodeView = 'menu' | 'registry' | 'install' | 'packages' | 'raw';
 
@@ -34,14 +36,14 @@ export function NodeModule({onBack}: {readonly onBack: () => void}) {
   if (loading || !summary) {
     return (
       <Layout title="DevHub — Node.js Ecosystem" subtitle="💚 Node.js Ecosystem">
-        <Text color="#58a6ff">Loading Node.js ecosystem...</Text>
+        <Text color={THEME.accent}>Loading Node.js ecosystem...</Text>
       </Layout>
     );
   }
 
   return (
     <Layout title="DevHub — Node.js Ecosystem" subtitle="💚 Node.js Ecosystem">
-      <Text color="#6e7681">── Environment Check ──────────────────────────</Text>
+      <MutedText>── Environment Check ──────────────────────────</MutedText>
       {summary.binaries.map((binary, index) => (
         <Text key={`${binary.name}-${index}`}>
           {`${binary.name.padEnd(12)} ${binary.version.padEnd(12)} ${binary.installed ? '✓' : '✗'}${binary.detail ? ` (${binary.detail})` : ''}`}
@@ -49,14 +51,14 @@ export function NodeModule({onBack}: {readonly onBack: () => void}) {
       ))}
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── npm Config ──────────────────────────</Text>
+        <MutedText>── npm Config ──────────────────────────</MutedText>
         <Text>{`registry    ${summary.registry}`}</Text>
         <Text>{`prefix      ${process.env.npm_config_prefix ?? '~/.npm-global'}`}</Text>
         <Text>{`cache       ${process.env.npm_config_cache ?? '~/.npm'}`}</Text>
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── Health Check ──────────────────────────</Text>
+        <MutedText>── Health Check ──────────────────────────</MutedText>
         {summary.health.map((item, index) => (
           <Box key={`${item.status}-${item.message}-${index}`}>
             <StatusBadge variant={item.status} />
@@ -66,7 +68,7 @@ export function NodeModule({onBack}: {readonly onBack: () => void}) {
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── Actions ──────────────────────────────</Text>
+        <MutedText>── Actions ──────────────────────────────</MutedText>
         {view === 'menu' ? (
           <MenuList
             items={[
@@ -162,7 +164,7 @@ export function NodeModule({onBack}: {readonly onBack: () => void}) {
 
       {message ? (
         <Box marginTop={1}>
-          <Text color={message === 'Unsupported install target.' ? '#f85149' : '#3fb950'}>{message}</Text>
+          <Text color={message === 'Unsupported install target.' ? THEME.danger : THEME.success}>{message}</Text>
         </Box>
       ) : null}
     </Layout>

@@ -4,6 +4,8 @@ import {dirname, join} from 'path';
 import {fileURLToPath} from 'url';
 import {Box, Text} from 'ink';
 import {getPlatformLabel} from '../utils/platform.js';
+import {MutedText} from './MutedText.js';
+import {THEME} from '../theme.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const {version} = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8')) as {version: string};
@@ -24,20 +26,20 @@ export function Layout({
 }) {
   return (
     <Box flexDirection="column" paddingX={1}>
-      <Box flexDirection="column" borderStyle="round" borderColor="#58a6ff" paddingX={1}>
-        <Text color="#58a6ff">{`🛠  ${title}`}</Text>
-        <Text color="#6e7681">{`v${version}         ${getPlatformLabel()}`}</Text>
+      <Box flexDirection="column" borderStyle="round" borderColor={THEME.accent} paddingX={1}>
+        <Text color={THEME.accent}>{`🛠  ${title}`}</Text>
+        <MutedText>{`v${version}         ${getPlatformLabel()}`}</MutedText>
       </Box>
       {subtitle ? (
         <Box marginTop={1}>
-          <Text color="#f0f6fc">{subtitle}</Text>
+          <Text>{subtitle}</Text>
         </Box>
       ) : null}
       <Box flexDirection="column" marginTop={1}>
         {children}
       </Box>
       <Box marginTop={1}>
-        {footer ?? <Text color="#6e7681">q Quit  Esc Back  Ctrl+C Force exit</Text>}
+        {footer ?? <MutedText>q Quit  Esc Back  Ctrl+C Force exit</MutedText>}
       </Box>
     </Box>
   );

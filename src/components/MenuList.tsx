@@ -2,6 +2,8 @@ import React, {useMemo, useState} from 'react';
 import {useEffect} from 'react';
 import {Box, Text, useInput} from 'ink';
 import {TextInput} from '@inkjs/ui';
+import {MutedText} from './MutedText.js';
+import {THEME} from '../theme.js';
 
 /**
  * Menu item model shared across pages.
@@ -79,7 +81,7 @@ export function MenuList({
     <Box flexDirection="column">
       {isSearching ? (
         <Box marginBottom={1}>
-          <Text color="#58a6ff">Search: </Text>
+          <Text color={THEME.accent}>Search: </Text>
           <TextInput defaultValue={query} onChange={setQuery} onSubmit={() => setIsSearching(false)} />
         </Box>
       ) : null}
@@ -87,15 +89,15 @@ export function MenuList({
         const selected = index === selectedIndex;
         return (
           <Box key={`${item.value}-${index}`}>
-            <Text color={selected ? '#bc8cff' : '#f0f6fc'}>{selected ? '❯ ' : '  '}</Text>
-            <Text color={selected ? '#bc8cff' : '#f0f6fc'}>{item.label}</Text>
-            {item.description ? <Text color="#6e7681">{`  ${item.description}`}</Text> : null}
+            <Text color={selected ? THEME.selected : undefined}>{selected ? '❯ ' : '  '}</Text>
+            <Text color={selected ? THEME.selected : undefined}>{item.label}</Text>
+            {item.description ? <MutedText>{`  ${item.description}`}</MutedText> : null}
           </Box>
         );
       })}
-      {filteredItems.length === 0 ? <Text color="#6e7681">No matches</Text> : null}
+      {filteredItems.length === 0 ? <MutedText>No matches</MutedText> : null}
       <Box marginTop={1}>
-        <Text color="#6e7681">↑↓ / j k Navigate  Enter Open  / Search</Text>
+        <MutedText>↑↓ / j k Navigate  Enter Open  / Search</MutedText>
       </Box>
     </Box>
   );

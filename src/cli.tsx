@@ -63,11 +63,13 @@ MODULES
                effective variable values with source file:line,
                sensitive values masked (Tab to toggle)
      Checks:   Duplicate variable definitions across files,
-               PATH segments that point to non-existent directories,
+               PATH segments that point to non-existent directories
+               or use unresolved references,
                EDITOR set, LANG = en_US.UTF-8
      Actions:  Search/trace any variable by name (provenance),
-               view PATH breakdown, add/edit variables,
-               check duplicate definitions, view raw files
+               view PATH breakdown, run doctor fix for safe remediations,
+               add/edit variables, check duplicate definitions,
+               view raw files
      Writes:   Modifies export lines in shell rc files (with diff preview)
 
   💚 Node.js Ecosystem ──────────────────────────────────────

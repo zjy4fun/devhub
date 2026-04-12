@@ -7,6 +7,7 @@ import {SSHModule} from './modules/ssh/SSHModule.js';
 import {EnvModule} from './modules/env/EnvModule.js';
 import {NodeModule} from './modules/node/NodeModule.js';
 import {ToolsModule} from './modules/tools/ToolsModule.js';
+import {MutedText} from './components/MutedText.js';
 
 type Route = 'main' | 'git' | 'ssh' | 'env' | 'node' | 'tools';
 
@@ -60,7 +61,7 @@ export function App() {
         ]}
         onSelect={(value) => setRoute(value as Route)}
       />
-      <Text color="#6e7681">↑↓ Navigate  ⏎ Open  q Quit</Text>
+      <MutedText>↑↓ Navigate  ⏎ Open  q Quit</MutedText>
     </Layout>
   );
 }

@@ -37,6 +37,7 @@ devhub
 - Variable provenance: which file and which line each variable came from
 - PATH analysis: flag missing directories
 - Duplicate definition detection, sensitive value masking (toggle with Tab)
+- Doctor fix: safe remediations for shadowed duplicates, broken PATH segments, and missing `EDITOR`
 - Reminder to source after editing
 
 ### 💚 Node.js Ecosystem

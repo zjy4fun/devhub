@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Box, Text} from 'ink';
 import {TextInput} from '@inkjs/ui';
+import {THEME} from '../theme.js';
 
 /**
  * Inline text input used for guided edit forms.
@@ -24,7 +25,7 @@ export function EditableField({
 
   return (
     <Box flexDirection="column">
-      <Text color="#58a6ff">{label}</Text>
+      <Text color={THEME.accent}>{label}</Text>
       <TextInput
         defaultValue={value}
         placeholder={placeholder}

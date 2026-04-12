@@ -8,6 +8,8 @@ import {EditableField} from '../../components/EditableField.js';
 import {BackButton} from '../../components/BackButton.js';
 import {addKeyToAgent, fixSshPermissions, generateSSHKey, prepareHostConfigAppend, testSSHHost, type SshPendingChange} from './ssh-actions.js';
 import {loadSSHSummary, type SSHSummary} from './ssh-parser.js';
+import {MutedText} from '../../components/MutedText.js';
+import {THEME} from '../../theme.js';
 
 type SSHView = 'menu' | 'generate' | 'add-agent' | 'edit-host' | 'test' | 'confirm' | 'raw';
 
@@ -35,15 +37,15 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
   if (loading || !summary) {
     return (
       <Layout title="DevHub — SSH Config" subtitle="🔐 SSH Config    ~/.ssh/">
-        <Text color="#58a6ff">Loading SSH config...</Text>
+        <Text color={THEME.accent}>Loading SSH config...</Text>
       </Layout>
     );
   }
 
   return (
     <Layout title="DevHub — SSH Config" subtitle="🔐 SSH Config    ~/.ssh/">
-      <Text color="#6e7681">── Key List ──────────────────────────</Text>
-      {summary.keys.length === 0 ? <Text color="#6e7681">No key files detected</Text> : null}
+      <MutedText>── Key List ──────────────────────────</MutedText>
+      {summary.keys.length === 0 ? <MutedText>No key files detected</MutedText> : null}
       {summary.keys.map((key, index) => (
         <Text key={`${key.name}-${key.path}-${index}`}>
           {`🔑 ${key.name}    ${key.type}  ${key.agentLoaded ? '✓ agent loaded' : '✗ agent not loaded'}  ${key.privateMode === '0600' ? '✓ mode 600' : `⚠ mode ${key.privateMode}`}`}
@@ -51,15 +53,15 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
       ))}
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── Host Config ──────────────────────────</Text>
-      {summary.hosts.length === 0 ? <Text color="#6e7681">No Host config detected</Text> : null}
+        <MutedText>── Host Config ──────────────────────────</MutedText>
+      {summary.hosts.length === 0 ? <MutedText>No Host config detected</MutedText> : null}
         {summary.hosts.map((host, index) => (
           <Text key={`${host.host}-${host.hostname}-${index}`}>{`${host.host}     → ${host.user}@${host.hostname}:${host.port} (${host.identityFile ?? 'no IdentityFile'})`}</Text>
         ))}
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── Health Check ──────────────────────────</Text>
+        <MutedText>── Health Check ──────────────────────────</MutedText>
         {summary.health.map((item, index) => (
           <Box key={`${item.status}-${item.message}-${index}`}>
             <StatusBadge variant={item.status} />
@@ -69,7 +71,7 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── Actions ──────────────────────────────</Text>
+        <MutedText>── Actions ──────────────────────────────</MutedText>
         {view === 'menu' ? (
           <MenuList
             items={[
@@ -216,7 +218,7 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
 
       {message ? (
         <Box marginTop={1}>
-          <Text color={message.toLowerCase().includes('error') ? '#f85149' : '#3fb950'}>{message}</Text>
+          <Text color={message.toLowerCase().includes('error') ? THEME.danger : THEME.success}>{message}</Text>
         </Box>
       ) : null}
     </Layout>

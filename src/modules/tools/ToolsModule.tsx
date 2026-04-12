@@ -6,6 +6,8 @@ import {EditableField} from '../../components/EditableField.js';
 import {runCommand} from '../../utils/shell.js';
 import {TOOL_REGISTRY, type Tool} from './tool-registry.js';
 import {BackButton} from '../../components/BackButton.js';
+import {MutedText} from '../../components/MutedText.js';
+import {THEME} from '../../theme.js';
 
 type ToolView = 'list' | 'detail' | 'execute';
 
@@ -49,16 +51,16 @@ export function ToolsModule({onBack}: {readonly onBack: () => void}) {
           <Text>{`📥 ${selectedTool.name} — ${selectedTool.description}`}</Text>
           <Box marginTop={1} flexDirection="column">
             <Text>Status: probe command ` {selectedTool.detect.command} `</Text>
-            <Text color="#6e7681">── Installation Methods ────────────────────────</Text>
+            <MutedText>── Installation Methods ────────────────────────</MutedText>
             {selectedTool.install.official.script ? <Text>{`Official install script: ${selectedTool.install.official.script}`}</Text> : null}
             {selectedTool.install.official.brew ? <Text>{`Homebrew: ${selectedTool.install.official.brew}`}</Text> : null}
             {selectedTool.install.official.apt ? <Text>{`apt: ${selectedTool.install.official.apt}`}</Text> : null}
             {selectedTool.install.china?.script ? <Text>{`China mirror: ${selectedTool.install.china.script}`}</Text> : null}
             {selectedTool.install.china?.mirror ? <Text>{`Mirror URL: ${selectedTool.install.china.mirror}`}</Text> : null}
-            {selectedTool.install.china?.note ? <Text color="#d29922">{selectedTool.install.china.note}</Text> : null}
+            {selectedTool.install.china?.note ? <Text color={THEME.warning}>{selectedTool.install.china.note}</Text> : null}
           </Box>
           <Box marginTop={1} flexDirection="column">
-            <Text color="#6e7681">── Actions ────────────────────────────</Text>
+            <MutedText>── Actions ────────────────────────────</MutedText>
             <MenuList
               items={[
                 {label: 'Copy install command to clipboard', value: 'copy'},
@@ -112,7 +114,7 @@ export function ToolsModule({onBack}: {readonly onBack: () => void}) {
 
       {message && view !== 'execute' ? (
         <Box marginTop={1}>
-          <Text color={message.includes('failed') ? '#f85149' : '#3fb950'}>{message}</Text>
+          <Text color={message.includes('failed') ? THEME.danger : THEME.success}>{message}</Text>
         </Box>
       ) : null}
     </Layout>

@@ -9,6 +9,8 @@ import {EditableField} from '../../components/EditableField.js';
 import {BackButton} from '../../components/BackButton.js';
 import {executeGitChange, getGitRawConfig, prepareGitAliasChange, prepareGitConfigChange, type GitPendingChange} from './git-actions.js';
 import {loadGitConfig, type GitConfigSummary} from './git-parser.js';
+import {MutedText} from '../../components/MutedText.js';
+import {THEME} from '../../theme.js';
 
 type GitView = 'menu' | 'edit' | 'confirm' | 'raw';
 type GitAction = 'identity' | 'editor' | 'branch' | 'alias' | 'pull' | 'raw';
@@ -43,7 +45,7 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
   if (loading || !summary || !overview) {
     return (
       <Layout title="DevHub — Git Config" subtitle="📦 Git Config    ~/.gitconfig">
-        <Text color="#58a6ff">Loading Git config...</Text>
+        <Text color={THEME.accent}>Loading Git config...</Text>
       </Layout>
     );
   }
@@ -65,7 +67,7 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
 
   return (
     <Layout title="DevHub — Git Config" subtitle="📦 Git Config    ~/.gitconfig">
-      <Text color="#6e7681">── Current Config Preview ──────────────────────</Text>
+      <MutedText>── Current Config Preview ──────────────────────</MutedText>
       <KeyValue label="Username" value={overview.userName} muted={overview.userName === '(not set)'} />
       <KeyValue label="Email" value={overview.userEmail} muted={overview.userEmail === '(not set)'} />
       <KeyValue label="Default Editor" value={overview.defaultEditor} muted={overview.defaultEditor === '(not set)'} />
@@ -74,7 +76,7 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
       <KeyValue label="Credential Helper" value={overview.credentialHelper} muted={overview.credentialHelper === '(not set)'} />
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── Health Check ──────────────────────────</Text>
+        <MutedText>── Health Check ──────────────────────────</MutedText>
         {summary.health.map((item, index) => (
           <Box key={`${item.status}-${item.message}-${index}`}>
             <StatusBadge variant={item.status} />
@@ -84,7 +86,7 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
       </Box>
 
       <Box marginTop={1} flexDirection="column">
-        <Text color="#6e7681">── Actions ──────────────────────────────</Text>
+        <MutedText>── Actions ──────────────────────────────</MutedText>
         {view === 'menu' ? (
           <MenuList
             items={actions}
@@ -196,10 +198,10 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
 
         {message ? (
           <Box marginTop={1}>
-            <Text color={message.startsWith('Failed') ? '#f85149' : '#3fb950'}>{message}</Text>
+            <Text color={message.startsWith('Failed') ? THEME.danger : THEME.success}>{message}</Text>
           </Box>
         ) : null}
-        {error ? <Text color="#f85149">{error}</Text> : null}
+        {error ? <Text color={THEME.danger}>{error}</Text> : null}
       </Box>
     </Layout>
   );

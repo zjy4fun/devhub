@@ -8,13 +8,13 @@ import { render } from "ink";
 
 // src/app.tsx
 import { useState as useState8 } from "react";
-import { Text as Text13, useApp, useInput as useInput4 } from "ink";
+import { useApp, useInput as useInput4 } from "ink";
 
 // src/components/Layout.tsx
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import { Box, Text } from "ink";
+import { Box, Text as Text2 } from "ink";
 
 // src/utils/platform.ts
 import os from "os";
@@ -40,8 +40,24 @@ function getPlatformLabel() {
   return `${detectPlatform()} ${getArchLabel()}`;
 }
 
+// src/components/MutedText.tsx
+import { Text } from "ink";
+import { jsx } from "react/jsx-runtime";
+function MutedText(props) {
+  return /* @__PURE__ */ jsx(Text, { dimColor: true, ...props });
+}
+
+// src/theme.ts
+var THEME = {
+  accent: "blue",
+  selected: "magenta",
+  success: "green",
+  warning: "yellow",
+  danger: "red"
+};
+
 // src/components/Layout.tsx
-import { jsx, jsxs } from "react/jsx-runtime";
+import { jsx as jsx2, jsxs } from "react/jsx-runtime";
 var __dirname = dirname(fileURLToPath(import.meta.url));
 var { version } = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf8"));
 function Layout({
@@ -51,22 +67,22 @@ function Layout({
   footer
 }) {
   return /* @__PURE__ */ jsxs(Box, { flexDirection: "column", paddingX: 1, children: [
-    /* @__PURE__ */ jsxs(Box, { flexDirection: "column", borderStyle: "round", borderColor: "#58a6ff", paddingX: 1, children: [
-      /* @__PURE__ */ jsx(Text, { color: "#58a6ff", children: `\u{1F6E0}  ${title}` }),
-      /* @__PURE__ */ jsx(Text, { color: "#6e7681", children: `v${version}         ${getPlatformLabel()}` })
+    /* @__PURE__ */ jsxs(Box, { flexDirection: "column", borderStyle: "round", borderColor: THEME.accent, paddingX: 1, children: [
+      /* @__PURE__ */ jsx2(Text2, { color: THEME.accent, children: `\u{1F6E0}  ${title}` }),
+      /* @__PURE__ */ jsx2(MutedText, { children: `v${version}         ${getPlatformLabel()}` })
     ] }),
-    subtitle ? /* @__PURE__ */ jsx(Box, { marginTop: 1, children: /* @__PURE__ */ jsx(Text, { color: "#f0f6fc", children: subtitle }) }) : null,
-    /* @__PURE__ */ jsx(Box, { flexDirection: "column", marginTop: 1, children }),
-    /* @__PURE__ */ jsx(Box, { marginTop: 1, children: footer ?? /* @__PURE__ */ jsx(Text, { color: "#6e7681", children: "q Quit  Esc Back  Ctrl+C Force exit" }) })
+    subtitle ? /* @__PURE__ */ jsx2(Box, { marginTop: 1, children: /* @__PURE__ */ jsx2(Text2, { children: subtitle }) }) : null,
+    /* @__PURE__ */ jsx2(Box, { flexDirection: "column", marginTop: 1, children }),
+    /* @__PURE__ */ jsx2(Box, { marginTop: 1, children: footer ?? /* @__PURE__ */ jsx2(MutedText, { children: "q Quit  Esc Back  Ctrl+C Force exit" }) })
   ] });
 }
 
 // src/components/MenuList.tsx
 import { useMemo, useState } from "react";
 import { useEffect } from "react";
-import { Box as Box2, Text as Text2, useInput } from "ink";
+import { Box as Box2, Text as Text3, useInput } from "ink";
 import { TextInput } from "@inkjs/ui";
-import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
 function MenuList({
   items,
   onSelect
@@ -116,19 +132,19 @@ function MenuList({
   });
   return /* @__PURE__ */ jsxs2(Box2, { flexDirection: "column", children: [
     isSearching ? /* @__PURE__ */ jsxs2(Box2, { marginBottom: 1, children: [
-      /* @__PURE__ */ jsx2(Text2, { color: "#58a6ff", children: "Search: " }),
-      /* @__PURE__ */ jsx2(TextInput, { defaultValue: query, onChange: setQuery, onSubmit: () => setIsSearching(false) })
+      /* @__PURE__ */ jsx3(Text3, { color: THEME.accent, children: "Search: " }),
+      /* @__PURE__ */ jsx3(TextInput, { defaultValue: query, onChange: setQuery, onSubmit: () => setIsSearching(false) })
     ] }) : null,
     filteredItems.map((item, index) => {
       const selected = index === selectedIndex;
       return /* @__PURE__ */ jsxs2(Box2, { children: [
-        /* @__PURE__ */ jsx2(Text2, { color: selected ? "#bc8cff" : "#f0f6fc", children: selected ? "\u276F " : "  " }),
-        /* @__PURE__ */ jsx2(Text2, { color: selected ? "#bc8cff" : "#f0f6fc", children: item.label }),
-        item.description ? /* @__PURE__ */ jsx2(Text2, { color: "#6e7681", children: `  ${item.description}` }) : null
+        /* @__PURE__ */ jsx3(Text3, { color: selected ? THEME.selected : void 0, children: selected ? "\u276F " : "  " }),
+        /* @__PURE__ */ jsx3(Text3, { color: selected ? THEME.selected : void 0, children: item.label }),
+        item.description ? /* @__PURE__ */ jsx3(MutedText, { children: `  ${item.description}` }) : null
       ] }, `${item.value}-${index}`);
     }),
-    filteredItems.length === 0 ? /* @__PURE__ */ jsx2(Text2, { color: "#6e7681", children: "No matches" }) : null,
-    /* @__PURE__ */ jsx2(Box2, { marginTop: 1, children: /* @__PURE__ */ jsx2(Text2, { color: "#6e7681", children: "\u2191\u2193 / j k Navigate  Enter Open  / Search" }) })
+    filteredItems.length === 0 ? /* @__PURE__ */ jsx3(MutedText, { children: "No matches" }) : null,
+    /* @__PURE__ */ jsx3(Box2, { marginTop: 1, children: /* @__PURE__ */ jsx3(MutedText, { children: "\u2191\u2193 / j k Navigate  Enter Open  / Search" }) })
   ] });
 }
 
@@ -137,27 +153,27 @@ import { useEffect as useEffect3, useMemo as useMemo2, useState as useState3 } f
 import { Box as Box6, Text as Text8 } from "ink";
 
 // src/components/KeyValue.tsx
-import { Box as Box3, Text as Text3 } from "ink";
-import { jsx as jsx3, jsxs as jsxs3 } from "react/jsx-runtime";
+import { Box as Box3, Text as Text4 } from "ink";
+import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
 function KeyValue({
   label,
   value,
   muted
 }) {
   return /* @__PURE__ */ jsxs3(Box3, { children: [
-    /* @__PURE__ */ jsx3(Box3, { width: 18, children: /* @__PURE__ */ jsx3(Text3, { color: "#c9d1d9", children: label }) }),
-    /* @__PURE__ */ jsx3(Text3, { color: muted ? "#6e7681" : "#f0f6fc", children: value })
+    /* @__PURE__ */ jsx4(Box3, { width: 18, children: /* @__PURE__ */ jsx4(MutedText, { children: label }) }),
+    muted ? /* @__PURE__ */ jsx4(MutedText, { children: value }) : /* @__PURE__ */ jsx4(Text4, { children: value })
   ] });
 }
 
 // src/components/StatusBadge.tsx
-import { Text as Text4 } from "ink";
-import { jsx as jsx4 } from "react/jsx-runtime";
+import { Text as Text5 } from "ink";
+import { jsx as jsx5 } from "react/jsx-runtime";
 var COLORS = {
-  ok: "#3fb950",
-  warn: "#d29922",
-  error: "#f85149",
-  info: "#58a6ff"
+  ok: THEME.success,
+  warn: THEME.warning,
+  error: THEME.danger,
+  info: THEME.accent
 };
 var LABELS = {
   ok: "\u2713",
@@ -166,12 +182,12 @@ var LABELS = {
   info: "\u2022"
 };
 function StatusBadge({ variant, label }) {
-  return /* @__PURE__ */ jsx4(Text4, { color: COLORS[variant], children: label ?? LABELS[variant] });
+  return /* @__PURE__ */ jsx5(Text5, { color: COLORS[variant], children: label ?? LABELS[variant] });
 }
 
 // src/components/ConfirmDialog.tsx
-import { Box as Box4, Text as Text5, useInput as useInput2 } from "ink";
-import { jsx as jsx5, jsxs as jsxs4 } from "react/jsx-runtime";
+import { Box as Box4, Text as Text6, useInput as useInput2 } from "ink";
+import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
 function ConfirmDialog({
   title,
   diff,
@@ -186,18 +202,18 @@ function ConfirmDialog({
       onCancel();
     }
   });
-  return /* @__PURE__ */ jsxs4(Box4, { flexDirection: "column", borderStyle: "round", borderColor: "#bc8cff", paddingX: 1, children: [
-    /* @__PURE__ */ jsx5(Text5, { color: "#bc8cff", children: title }),
-    /* @__PURE__ */ jsx5(Box4, { marginTop: 1, children: /* @__PURE__ */ jsx5(Text5, { children: diff }) }),
-    /* @__PURE__ */ jsx5(Box4, { marginTop: 1, children: /* @__PURE__ */ jsx5(Text5, { color: "#d29922", children: "Press `y` / `Enter` to confirm, `n` / `Esc` to cancel" }) })
+  return /* @__PURE__ */ jsxs4(Box4, { flexDirection: "column", borderStyle: "round", borderColor: THEME.selected, paddingX: 1, children: [
+    /* @__PURE__ */ jsx6(Text6, { color: THEME.selected, children: title }),
+    /* @__PURE__ */ jsx6(Box4, { marginTop: 1, children: /* @__PURE__ */ jsx6(Text6, { children: diff }) }),
+    /* @__PURE__ */ jsx6(Box4, { marginTop: 1, children: /* @__PURE__ */ jsx6(Text6, { color: THEME.warning, children: "Press `y` / `Enter` to confirm, `n` / `Esc` to cancel" }) })
   ] });
 }
 
 // src/components/EditableField.tsx
 import { useEffect as useEffect2, useState as useState2 } from "react";
-import { Box as Box5, Text as Text6 } from "ink";
+import { Box as Box5, Text as Text7 } from "ink";
 import { TextInput as TextInput2 } from "@inkjs/ui";
-import { jsx as jsx6, jsxs as jsxs5 } from "react/jsx-runtime";
+import { jsx as jsx7, jsxs as jsxs5 } from "react/jsx-runtime";
 function EditableField({
   label,
   defaultValue,
@@ -209,8 +225,8 @@ function EditableField({
     setValue(defaultValue ?? "");
   }, [defaultValue]);
   return /* @__PURE__ */ jsxs5(Box5, { flexDirection: "column", children: [
-    /* @__PURE__ */ jsx6(Text6, { color: "#58a6ff", children: label }),
-    /* @__PURE__ */ jsx6(
+    /* @__PURE__ */ jsx7(Text7, { color: THEME.accent, children: label }),
+    /* @__PURE__ */ jsx7(
       TextInput2,
       {
         defaultValue: value,
@@ -223,10 +239,9 @@ function EditableField({
 }
 
 // src/components/BackButton.tsx
-import { Text as Text7 } from "ink";
-import { jsx as jsx7 } from "react/jsx-runtime";
+import { jsx as jsx8 } from "react/jsx-runtime";
 function BackButton() {
-  return /* @__PURE__ */ jsx7(Text7, { color: "#6e7681", children: "`Esc` / `q` Back" });
+  return /* @__PURE__ */ jsx8(MutedText, { children: "`Esc` / `q` Back" });
 }
 
 // src/utils/file.ts
@@ -421,7 +436,7 @@ async function loadGitConfig(cwd = process.cwd()) {
 }
 
 // src/modules/git/GitModule.tsx
-import { jsx as jsx8, jsxs as jsxs6 } from "react/jsx-runtime";
+import { jsx as jsx9, jsxs as jsxs6 } from "react/jsx-runtime";
 function GitModule({ onBack }) {
   const [summary, setSummary] = useState3(null);
   const [view, setView] = useState3("menu");
@@ -443,7 +458,7 @@ function GitModule({ onBack }) {
   }, []);
   const overview = useMemo2(() => summary?.preview, [summary]);
   if (loading || !summary || !overview) {
-    return /* @__PURE__ */ jsx8(Layout, { title: "DevHub \u2014 Git Config", subtitle: "\u{1F4E6} Git Config    ~/.gitconfig", children: /* @__PURE__ */ jsx8(Text8, { color: "#58a6ff", children: "Loading Git config..." }) });
+    return /* @__PURE__ */ jsx9(Layout, { title: "DevHub \u2014 Git Config", subtitle: "\u{1F4E6} Git Config    ~/.gitconfig", children: /* @__PURE__ */ jsx9(Text8, { color: THEME.accent, children: "Loading Git config..." }) });
   }
   const actions = [
     { label: "Edit username/email", value: "identity" },
@@ -459,23 +474,23 @@ function GitModule({ onBack }) {
     setView("confirm");
   };
   return /* @__PURE__ */ jsxs6(Layout, { title: "DevHub \u2014 Git Config", subtitle: "\u{1F4E6} Git Config    ~/.gitconfig", children: [
-    /* @__PURE__ */ jsx8(Text8, { color: "#6e7681", children: "\u2500\u2500 Current Config Preview \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "Username", value: overview.userName, muted: overview.userName === "(not set)" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "Email", value: overview.userEmail, muted: overview.userEmail === "(not set)" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "Default Editor", value: overview.defaultEditor, muted: overview.defaultEditor === "(not set)" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "Default Branch", value: overview.defaultBranch, muted: overview.defaultBranch === "(not set)" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "Pull Strategy", value: overview.pullStrategy, muted: overview.pullStrategy === "(not set)" }),
-    /* @__PURE__ */ jsx8(KeyValue, { label: "Credential Helper", value: overview.credentialHelper, muted: overview.credentialHelper === "(not set)" }),
+    /* @__PURE__ */ jsx9(MutedText, { children: "\u2500\u2500 Current Config Preview \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+    /* @__PURE__ */ jsx9(KeyValue, { label: "Username", value: overview.userName, muted: overview.userName === "(not set)" }),
+    /* @__PURE__ */ jsx9(KeyValue, { label: "Email", value: overview.userEmail, muted: overview.userEmail === "(not set)" }),
+    /* @__PURE__ */ jsx9(KeyValue, { label: "Default Editor", value: overview.defaultEditor, muted: overview.defaultEditor === "(not set)" }),
+    /* @__PURE__ */ jsx9(KeyValue, { label: "Default Branch", value: overview.defaultBranch, muted: overview.defaultBranch === "(not set)" }),
+    /* @__PURE__ */ jsx9(KeyValue, { label: "Pull Strategy", value: overview.pullStrategy, muted: overview.pullStrategy === "(not set)" }),
+    /* @__PURE__ */ jsx9(KeyValue, { label: "Credential Helper", value: overview.credentialHelper, muted: overview.credentialHelper === "(not set)" }),
     /* @__PURE__ */ jsxs6(Box6, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx8(Text8, { color: "#6e7681", children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx9(MutedText, { children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       summary.health.map((item, index) => /* @__PURE__ */ jsxs6(Box6, { children: [
-        /* @__PURE__ */ jsx8(StatusBadge, { variant: item.status }),
-        /* @__PURE__ */ jsx8(Text8, { children: ` ${item.message}` })
+        /* @__PURE__ */ jsx9(StatusBadge, { variant: item.status }),
+        /* @__PURE__ */ jsx9(Text8, { children: ` ${item.message}` })
       ] }, `${item.status}-${item.message}-${index}`))
     ] }),
     /* @__PURE__ */ jsxs6(Box6, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx8(Text8, { color: "#6e7681", children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-      view === "menu" ? /* @__PURE__ */ jsx8(
+      /* @__PURE__ */ jsx9(MutedText, { children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      view === "menu" ? /* @__PURE__ */ jsx9(
         MenuList,
         {
           items: actions,
@@ -504,7 +519,7 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
         }
       ) : null,
       view === "edit" && selectedAction === "identity" ? /* @__PURE__ */ jsxs6(Box6, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx8(
+        /* @__PURE__ */ jsx9(
           EditableField,
           {
             label: `Current username: ${overview.userName}`,
@@ -513,7 +528,7 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
             onSubmit: (value) => void submitSingleChange("user.name", summary.globalConfig.user?.name ?? "", value)
           }
         ),
-        /* @__PURE__ */ jsx8(
+        /* @__PURE__ */ jsx9(
           EditableField,
           {
             label: `Current email: ${overview.userEmail}`,
@@ -522,10 +537,10 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
             onSubmit: (value) => void submitSingleChange("user.email", summary.globalConfig.user?.email ?? "", value)
           }
         ),
-        /* @__PURE__ */ jsx8(BackButton, {})
+        /* @__PURE__ */ jsx9(BackButton, {})
       ] }) : null,
       view === "edit" && selectedAction === "editor" ? /* @__PURE__ */ jsxs6(Box6, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx8(
+        /* @__PURE__ */ jsx9(
           EditableField,
           {
             label: `Current default editor: ${overview.defaultEditor}`,
@@ -534,10 +549,10 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
             onSubmit: (value) => void submitSingleChange("core.editor", summary.globalConfig.core?.editor ?? "", value)
           }
         ),
-        /* @__PURE__ */ jsx8(BackButton, {})
+        /* @__PURE__ */ jsx9(BackButton, {})
       ] }) : null,
       view === "edit" && selectedAction === "branch" ? /* @__PURE__ */ jsxs6(Box6, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx8(
+        /* @__PURE__ */ jsx9(
           EditableField,
           {
             label: `Current default branch: ${overview.defaultBranch}`,
@@ -546,10 +561,10 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
             onSubmit: (value) => void submitSingleChange("init.defaultBranch", summary.globalConfig.init?.defaultBranch ?? "", value)
           }
         ),
-        /* @__PURE__ */ jsx8(BackButton, {})
+        /* @__PURE__ */ jsx9(BackButton, {})
       ] }) : null,
       view === "edit" && selectedAction === "pull" ? /* @__PURE__ */ jsxs6(Box6, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx8(
+        /* @__PURE__ */ jsx9(
           EditableField,
           {
             label: `Current pull strategy: ${overview.pullStrategy}`,
@@ -558,9 +573,9 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
             onSubmit: (value) => void submitSingleChange("pull.rebase", summary.globalConfig.pull?.rebase ?? "", value)
           }
         ),
-        /* @__PURE__ */ jsx8(BackButton, {})
+        /* @__PURE__ */ jsx9(BackButton, {})
       ] }) : null,
-      view === "confirm" && pending ? /* @__PURE__ */ jsx8(
+      view === "confirm" && pending ? /* @__PURE__ */ jsx9(
         ConfirmDialog,
         {
           title: pending.title,
@@ -579,11 +594,11 @@ ${summary.localRaw}` : "# Local: not found"].join("\n")
         }
       ) : null,
       view === "raw" ? /* @__PURE__ */ jsxs6(Box6, { flexDirection: "column", children: [
-        /* @__PURE__ */ jsx8(Text8, { children: rawText }),
-        /* @__PURE__ */ jsx8(BackButton, {})
+        /* @__PURE__ */ jsx9(Text8, { children: rawText }),
+        /* @__PURE__ */ jsx9(BackButton, {})
       ] }) : null,
-      message ? /* @__PURE__ */ jsx8(Box6, { marginTop: 1, children: /* @__PURE__ */ jsx8(Text8, { color: message.startsWith("Failed") ? "#f85149" : "#3fb950", children: message }) }) : null,
-      error ? /* @__PURE__ */ jsx8(Text8, { color: "#f85149", children: error }) : null
+      message ? /* @__PURE__ */ jsx9(Box6, { marginTop: 1, children: /* @__PURE__ */ jsx9(Text8, { color: message.startsWith("Failed") ? THEME.danger : THEME.success, children: message }) }) : null,
+      error ? /* @__PURE__ */ jsx9(Text8, { color: THEME.danger, children: error }) : null
     ] })
   ] });
 }
@@ -769,7 +784,7 @@ ${agentList.stderr}`;
 }
 
 // src/modules/ssh/SSHModule.tsx
-import { jsx as jsx9, jsxs as jsxs7 } from "react/jsx-runtime";
+import { jsx as jsx10, jsxs as jsxs7 } from "react/jsx-runtime";
 function SSHModule({ onBack }) {
   const [summary, setSummary] = useState4(null);
   const [view, setView] = useState4("menu");
@@ -786,27 +801,27 @@ function SSHModule({ onBack }) {
     void refresh();
   }, []);
   if (loading || !summary) {
-    return /* @__PURE__ */ jsx9(Layout, { title: "DevHub \u2014 SSH Config", subtitle: "\u{1F510} SSH Config    ~/.ssh/", children: /* @__PURE__ */ jsx9(Text9, { color: "#58a6ff", children: "Loading SSH config..." }) });
+    return /* @__PURE__ */ jsx10(Layout, { title: "DevHub \u2014 SSH Config", subtitle: "\u{1F510} SSH Config    ~/.ssh/", children: /* @__PURE__ */ jsx10(Text9, { color: THEME.accent, children: "Loading SSH config..." }) });
   }
   return /* @__PURE__ */ jsxs7(Layout, { title: "DevHub \u2014 SSH Config", subtitle: "\u{1F510} SSH Config    ~/.ssh/", children: [
-    /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 Key List \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-    summary.keys.length === 0 ? /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "No key files detected" }) : null,
-    summary.keys.map((key, index) => /* @__PURE__ */ jsx9(Text9, { children: `\u{1F511} ${key.name}    ${key.type}  ${key.agentLoaded ? "\u2713 agent loaded" : "\u2717 agent not loaded"}  ${key.privateMode === "0600" ? "\u2713 mode 600" : `\u26A0 mode ${key.privateMode}`}` }, `${key.name}-${key.path}-${index}`)),
+    /* @__PURE__ */ jsx10(MutedText, { children: "\u2500\u2500 Key List \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+    summary.keys.length === 0 ? /* @__PURE__ */ jsx10(MutedText, { children: "No key files detected" }) : null,
+    summary.keys.map((key, index) => /* @__PURE__ */ jsx10(Text9, { children: `\u{1F511} ${key.name}    ${key.type}  ${key.agentLoaded ? "\u2713 agent loaded" : "\u2717 agent not loaded"}  ${key.privateMode === "0600" ? "\u2713 mode 600" : `\u26A0 mode ${key.privateMode}`}` }, `${key.name}-${key.path}-${index}`)),
     /* @__PURE__ */ jsxs7(Box7, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 Host Config \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-      summary.hosts.length === 0 ? /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "No Host config detected" }) : null,
-      summary.hosts.map((host, index) => /* @__PURE__ */ jsx9(Text9, { children: `${host.host}     \u2192 ${host.user}@${host.hostname}:${host.port} (${host.identityFile ?? "no IdentityFile"})` }, `${host.host}-${host.hostname}-${index}`))
+      /* @__PURE__ */ jsx10(MutedText, { children: "\u2500\u2500 Host Config \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      summary.hosts.length === 0 ? /* @__PURE__ */ jsx10(MutedText, { children: "No Host config detected" }) : null,
+      summary.hosts.map((host, index) => /* @__PURE__ */ jsx10(Text9, { children: `${host.host}     \u2192 ${host.user}@${host.hostname}:${host.port} (${host.identityFile ?? "no IdentityFile"})` }, `${host.host}-${host.hostname}-${index}`))
     ] }),
     /* @__PURE__ */ jsxs7(Box7, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx10(MutedText, { children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       summary.health.map((item, index) => /* @__PURE__ */ jsxs7(Box7, { children: [
-        /* @__PURE__ */ jsx9(StatusBadge, { variant: item.status }),
-        /* @__PURE__ */ jsx9(Text9, { children: ` ${item.message}` })
+        /* @__PURE__ */ jsx10(StatusBadge, { variant: item.status }),
+        /* @__PURE__ */ jsx10(Text9, { children: ` ${item.message}` })
       ] }, `${item.status}-${item.message}-${index}`))
     ] }),
     /* @__PURE__ */ jsxs7(Box7, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx9(Text9, { color: "#6e7681", children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-      view === "menu" ? /* @__PURE__ */ jsx9(
+      /* @__PURE__ */ jsx10(MutedText, { children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      view === "menu" ? /* @__PURE__ */ jsx10(
         MenuList,
         {
           items: [
@@ -838,7 +853,7 @@ function SSHModule({ onBack }) {
         }
       ) : null,
       view === "generate" ? /* @__PURE__ */ jsxs7(Box7, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx9(
+        /* @__PURE__ */ jsx10(
           EditableField,
           {
             label: "Enter email and new key filename in the format: email,fileName",
@@ -856,10 +871,10 @@ function SSHModule({ onBack }) {
             }
           }
         ),
-        /* @__PURE__ */ jsx9(BackButton, {})
+        /* @__PURE__ */ jsx10(BackButton, {})
       ] }) : null,
       view === "add-agent" ? /* @__PURE__ */ jsxs7(Box7, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx9(
+        /* @__PURE__ */ jsx10(
           EditableField,
           {
             label: "Enter the key filename to add to the agent",
@@ -877,10 +892,10 @@ function SSHModule({ onBack }) {
             }
           }
         ),
-        /* @__PURE__ */ jsx9(BackButton, {})
+        /* @__PURE__ */ jsx10(BackButton, {})
       ] }) : null,
       view === "edit-host" ? /* @__PURE__ */ jsxs7(Box7, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx9(
+        /* @__PURE__ */ jsx10(
           EditableField,
           {
             label: "Enter host config in the format: alias,hostname,user,identityFile",
@@ -896,10 +911,10 @@ function SSHModule({ onBack }) {
             }
           }
         ),
-        /* @__PURE__ */ jsx9(BackButton, {})
+        /* @__PURE__ */ jsx10(BackButton, {})
       ] }) : null,
       view === "test" ? /* @__PURE__ */ jsxs7(Box7, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx9(
+        /* @__PURE__ */ jsx10(
           EditableField,
           {
             label: "Enter the Host alias to test",
@@ -915,9 +930,9 @@ function SSHModule({ onBack }) {
             }
           }
         ),
-        /* @__PURE__ */ jsx9(BackButton, {})
+        /* @__PURE__ */ jsx10(BackButton, {})
       ] }) : null,
-      view === "confirm" && pending ? /* @__PURE__ */ jsx9(
+      view === "confirm" && pending ? /* @__PURE__ */ jsx10(
         ConfirmDialog,
         {
           title: pending.title,
@@ -936,11 +951,11 @@ function SSHModule({ onBack }) {
         }
       ) : null,
       view === "raw" ? /* @__PURE__ */ jsxs7(Box7, { flexDirection: "column", children: [
-        /* @__PURE__ */ jsx9(Text9, { children: summary.configRaw || "(config not found)" }),
-        /* @__PURE__ */ jsx9(BackButton, {})
+        /* @__PURE__ */ jsx10(Text9, { children: summary.configRaw || "(config not found)" }),
+        /* @__PURE__ */ jsx10(BackButton, {})
       ] }) : null
     ] }),
-    message ? /* @__PURE__ */ jsx9(Box7, { marginTop: 1, children: /* @__PURE__ */ jsx9(Text9, { color: message.toLowerCase().includes("error") ? "#f85149" : "#3fb950", children: message }) }) : null
+    message ? /* @__PURE__ */ jsx10(Box7, { marginTop: 1, children: /* @__PURE__ */ jsx10(Text9, { color: message.toLowerCase().includes("error") ? THEME.danger : THEME.success, children: message }) }) : null
   ] });
 }
 
@@ -949,13 +964,45 @@ import { useEffect as useEffect5, useMemo as useMemo3, useState as useState5 } f
 import { Box as Box8, Text as Text10, useInput as useInput3 } from "ink";
 
 // src/modules/env/env-actions.ts
-async function prepareEnvChange(filePath, key, value) {
-  const current = await readTextFile(filePath) ?? "";
+var EXPORT_PATTERN = /^\s*export\s+([A-Za-z_][A-Za-z0-9_]*)=/;
+var FISH_EXPORT_PATTERN = /^\s*set\s+-(?:g?x|xg)\s+([A-Za-z_][A-Za-z0-9_]*)\s+/;
+function isFishConfig(filePath) {
+  return filePath.endsWith(".fish");
+}
+function formatEnvAssignment(filePath, key, value) {
   const safeKey = sanitizeInput(key);
   const safeValue = sanitizeInput(value);
-  const nextLine = `export ${safeKey}="${safeValue}"`;
+  return isFishConfig(filePath) ? `set -gx ${safeKey} "${safeValue}"` : `export ${safeKey}="${safeValue}"`;
+}
+function findAssignmentIndex(lines, filePath, key) {
+  const safeKey = sanitizeInput(key);
+  return lines.findIndex((line) => {
+    const match = isFishConfig(filePath) ? line.match(FISH_EXPORT_PATTERN) : line.match(EXPORT_PATTERN);
+    return match?.[1] === safeKey;
+  });
+}
+function createCombinedDiffPreview(changes) {
+  return changes.map((change) => [`### ${change.filePath}`, createDiffPreview(change.before, change.after)].join("\n")).join("\n\n");
+}
+function createPendingChange(title, changes) {
+  return {
+    title,
+    diff: createCombinedDiffPreview(changes),
+    execute: async () => {
+      for (const change of changes) {
+        await writeTextFile(change.filePath, change.after);
+      }
+    }
+  };
+}
+function splitPathSegments(value) {
+  return value.split(":").map((segment) => segment.trim()).filter(Boolean);
+}
+async function prepareEnvChange(filePath, key, value) {
+  const current = await readTextFile(filePath) ?? "";
+  const nextLine = formatEnvAssignment(filePath, key, value);
   const lines = current.split("\n");
-  const existingIndex = lines.findIndex((line) => line.trim().startsWith(`export ${safeKey}=`));
+  const existingIndex = findAssignmentIndex(lines, filePath, key);
   let next = current;
   if (existingIndex >= 0) {
     lines[existingIndex] = nextLine;
@@ -964,13 +1011,92 @@ async function prepareEnvChange(filePath, key, value) {
     next = `${current}${current.endsWith("\n") || current.length === 0 ? "" : "\n"}${nextLine}
 `;
   }
-  return {
-    title: `Confirm update environment variable ${safeKey}`,
-    diff: createDiffPreview(current, next),
-    execute: async () => {
-      await writeTextFile(filePath, next);
+  return createPendingChange(`Confirm update environment variable ${sanitizeInput(key)}`, [
+    {
+      filePath,
+      before: current,
+      after: next
     }
-  };
+  ]);
+}
+async function prepareDuplicateFix(summary, fix) {
+  const issue = summary.duplicateIssues.find((candidate) => candidate.key === fix.key && candidate.fixable);
+  if (!issue || issue.entries.length < 2) {
+    throw new Error("No safe duplicate fix is available for that variable.");
+  }
+  const removableEntries = issue.entries.slice(0, -1);
+  const removals = /* @__PURE__ */ new Map();
+  for (const entry of removableEntries) {
+    const lines = removals.get(entry.file) ?? /* @__PURE__ */ new Set();
+    lines.add(entry.line);
+    removals.set(entry.file, lines);
+  }
+  const changes = [];
+  for (const [filePath, linesToRemove] of removals) {
+    const current = await readTextFile(filePath) ?? "";
+    const next = current.split("\n").filter((_, index) => !linesToRemove.has(index + 1)).join("\n");
+    if (current !== next) {
+      changes.push({ filePath, before: current, after: next });
+    }
+  }
+  if (changes.length === 0) {
+    throw new Error("Nothing changed while preparing the duplicate fix.");
+  }
+  return createPendingChange(`Confirm doctor fix for duplicate ${issue.key}`, changes);
+}
+async function preparePathFix(summary, fix) {
+  const targetIssue = summary.pathIssues.find(
+    (issue) => issue.kind === "missing-path" && issue.fixable && issue.entry.file === fix.file && issue.entry.line === fix.line && issue.segment === fix.segment
+  );
+  if (!targetIssue) {
+    throw new Error("No safe PATH cleanup is available for that segment.");
+  }
+  const current = await readTextFile(targetIssue.entry.file) ?? "";
+  const lines = current.split("\n");
+  const currentLine = lines[targetIssue.entry.line - 1] ?? "";
+  const targetEntry = summary.entries.find(
+    (entry) => entry.key === "PATH" && entry.file === targetIssue.entry.file && entry.line === targetIssue.entry.line
+  );
+  if (!targetEntry) {
+    throw new Error("The PATH definition could not be located.");
+  }
+  const nextSegments = splitPathSegments(targetEntry.value).filter((segment) => segment !== targetIssue.segment);
+  if (nextSegments.length === 0) {
+    throw new Error("Removing that PATH segment would empty the assignment.");
+  }
+  lines[targetIssue.entry.line - 1] = formatEnvAssignment(targetIssue.entry.file, "PATH", nextSegments.join(":"));
+  const next = lines.join("\n");
+  if (currentLine === lines[targetIssue.entry.line - 1]) {
+    throw new Error("Nothing changed while preparing the PATH fix.");
+  }
+  return createPendingChange(`Confirm doctor fix for PATH at ${targetIssue.entry.file}:${targetIssue.entry.line}`, [
+    {
+      filePath: targetIssue.entry.file,
+      before: current,
+      after: next
+    }
+  ]);
+}
+async function prepareEditorFix(summary, fix) {
+  return prepareEnvChange(fix.file ?? summary.preferredShellFile, "EDITOR", fix.value ?? summary.recommendedEditor);
+}
+async function prepareEnvDoctorFix(summary, fixId) {
+  const fix = summary.doctorFixes.find((candidate) => candidate.id === fixId);
+  if (!fix) {
+    throw new Error("Doctor fix not found.");
+  }
+  switch (fix.kind) {
+    case "dedupe":
+      return prepareDuplicateFix(summary, fix);
+    case "remove-path-segment":
+      return preparePathFix(summary, fix);
+    case "set-editor":
+      return prepareEditorFix(summary, fix);
+    default: {
+      const neverFix = fix;
+      throw new Error(`Unsupported doctor fix: ${JSON.stringify(neverFix)}`);
+    }
+  }
 }
 
 // src/modules/env/env-parser.ts
@@ -983,16 +1109,36 @@ var EnvEntrySchema = z3.object({
   file: z3.string(),
   line: z3.number().int().positive()
 });
-var EXPORT_PATTERN = /^\s*export\s+([A-Za-z_][A-Za-z0-9_]*)=(.*)\s*$/;
+var VARIABLE_REFERENCE_PATTERN = /\$([A-Za-z_][A-Za-z0-9_]*)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}/g;
+var EXPORT_PATTERN2 = /^\s*export\s+([A-Za-z_][A-Za-z0-9_]*)=(.*)\s*$/;
+var FISH_EXPORT_PATTERN2 = /^\s*set\s+-(?:g?x|xg)\s+([A-Za-z_][A-Za-z0-9_]*)\s+(.*)\s*$/;
+function getShellProfile(shellName) {
+  if (shellName === "bash") {
+    return {
+      files: ["~/.bash_profile", "~/.bashrc", "~/.profile"],
+      preferredFile: "~/.bashrc"
+    };
+  }
+  if (shellName === "fish") {
+    return {
+      files: ["~/.config/fish/config.fish"],
+      preferredFile: "~/.config/fish/config.fish"
+    };
+  }
+  return {
+    files: ["~/.zshenv", "~/.zprofile", "~/.zshrc", "~/.zlogin"],
+    preferredFile: "~/.zshrc"
+  };
+}
 function getShellFiles(shellPath, cwd = process.cwd()) {
   const shellName = shellPath.split("/").pop() ?? "zsh";
-  const files = shellName === "bash" ? ["~/.bash_profile", "~/.bashrc", "~/.profile"] : shellName === "fish" ? ["~/.config/fish/config.fish"] : ["~/.zshenv", "~/.zprofile", "~/.zshrc", "~/.zlogin"];
+  const profile = getShellProfile(shellName);
   return [
-    ...files.map((filePath) => ({
+    ...profile.files.map((filePath) => ({
       path: filePath,
       exists: false,
-      current: filePath.includes(shellName),
-      note: filePath.includes(shellName) ? "(current shell)" : void 0
+      current: filePath === profile.preferredFile,
+      note: filePath === profile.preferredFile ? "(current shell)" : void 0
     })),
     { path: path5.join(cwd, ".env"), exists: false, current: false, note: "(current directory)" }
   ];
@@ -1003,7 +1149,7 @@ async function parseEnvFile(filePath) {
     return [];
   }
   return raw.split("\n").flatMap((line, index) => {
-    const match = line.match(EXPORT_PATTERN);
+    const match = line.match(EXPORT_PATTERN2) ?? line.match(FISH_EXPORT_PATTERN2);
     if (!match) {
       return [];
     }
@@ -1019,8 +1165,159 @@ async function parseEnvFile(filePath) {
     ];
   });
 }
+function extractVariableReferences(value) {
+  const variables = /* @__PURE__ */ new Set();
+  for (const match of value.matchAll(VARIABLE_REFERENCE_PATTERN)) {
+    variables.add(match[1] ?? match[2]);
+  }
+  return Array.from(variables);
+}
+function resolveReferences(value, effectiveMap, seen = /* @__PURE__ */ new Set()) {
+  return value.replace(VARIABLE_REFERENCE_PATTERN, (match, simpleName, bracedName) => {
+    const name = simpleName ?? bracedName;
+    if (!name || seen.has(name)) {
+      return match;
+    }
+    const nextSeen = new Set(seen);
+    nextSeen.add(name);
+    const nextValue = effectiveMap.get(name)?.value ?? process.env[name];
+    return typeof nextValue === "string" ? resolveReferences(nextValue, effectiveMap, nextSeen) : match;
+  });
+}
+function referencesVariable(value, key) {
+  return extractVariableReferences(value).includes(key);
+}
+function splitPathSegments2(value) {
+  return value.split(":").map((segment) => segment.trim()).filter(Boolean);
+}
+function isSafeDuplicate(entries, groupedEntries, key) {
+  if (groupedEntries.length < 2) {
+    return false;
+  }
+  const positions = groupedEntries.map((entry) => entries.findIndex((candidate) => candidate.file === entry.file && candidate.line === entry.line));
+  if (positions.some((position) => position < 0)) {
+    return false;
+  }
+  for (let index = 0; index < positions.length - 1; index += 1) {
+    const currentPosition = positions[index];
+    const nextPosition = positions[index + 1];
+    const nextEntry = entries[nextPosition];
+    if (referencesVariable(nextEntry.value, key)) {
+      return false;
+    }
+    for (let cursor = currentPosition + 1; cursor < nextPosition; cursor += 1) {
+      if (referencesVariable(entries[cursor].value, key)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+async function collectPathIssues(entries, effectiveMap) {
+  const pathEntries = entries.filter((entry) => entry.key === "PATH");
+  const issues = [];
+  for (const entry of pathEntries) {
+    const segments = splitPathSegments2(entry.value);
+    for (const segment of segments) {
+      if (segment === "$PATH" || segment === "${PATH}") {
+        continue;
+      }
+      const referencedVariables = extractVariableReferences(segment).filter((name) => name !== "PATH");
+      const resolvedSegment = expandHome(resolveReferences(segment, effectiveMap, /* @__PURE__ */ new Set(["PATH"]))).trim();
+      if (!resolvedSegment || resolvedSegment.includes("$")) {
+        issues.push({
+          kind: "unresolved-path",
+          entry,
+          segment,
+          referencedVariables,
+          fixable: false
+        });
+        continue;
+      }
+      try {
+        await fs3.access(resolvedSegment);
+      } catch {
+        const remainingSegments = segments.filter((candidate) => candidate !== segment);
+        issues.push({
+          kind: "missing-path",
+          entry,
+          segment,
+          resolvedSegment,
+          referencedVariables,
+          fixable: remainingSegments.length > 0
+        });
+      }
+    }
+  }
+  return issues;
+}
+async function detectRecommendedEditor() {
+  const candidates = [
+    { command: "code", value: "code --wait" },
+    { command: "cursor", value: "cursor --wait" },
+    { command: "nvim", value: "nvim" },
+    { command: "vim", value: "vim" },
+    { command: "nano", value: "nano" }
+  ];
+  for (const candidate of candidates) {
+    const result = await runCommand("which", [candidate.command]);
+    if (result.ok && result.stdout) {
+      return candidate.value;
+    }
+  }
+  return "vim";
+}
+function buildDoctorFixes({
+  duplicateIssues,
+  pathIssues,
+  effectiveMap,
+  preferredShellFile,
+  recommendedEditor
+}) {
+  const fixes = [];
+  for (const issue of duplicateIssues) {
+    if (!issue.fixable) {
+      continue;
+    }
+    const winner = issue.entries[issue.entries.length - 1];
+    fixes.push({
+      id: `dedupe:${issue.key}`,
+      kind: "dedupe",
+      title: `Remove shadowed duplicate: ${issue.key}`,
+      description: `Keeps the last definition at ${winner.file}:${winner.line}`,
+      key: issue.key
+    });
+  }
+  for (const issue of pathIssues) {
+    if (issue.kind !== "missing-path" || !issue.fixable) {
+      continue;
+    }
+    fixes.push({
+      id: `path:${issue.entry.file}:${issue.entry.line}:${issue.segment}`,
+      kind: "remove-path-segment",
+      title: `Remove missing PATH segment`,
+      description: `${issue.segment}  \u2190 ${issue.entry.file}:${issue.entry.line}`,
+      file: issue.entry.file,
+      line: issue.entry.line,
+      segment: issue.segment
+    });
+  }
+  if (!effectiveMap.get("EDITOR")) {
+    fixes.push({
+      id: "editor:set",
+      kind: "set-editor",
+      title: `Set EDITOR to ${recommendedEditor}`,
+      description: `Writes to ${preferredShellFile}`,
+      file: preferredShellFile,
+      value: recommendedEditor
+    });
+  }
+  return fixes;
+}
 async function loadEnvSummary() {
   const shell = process.env.SHELL ?? "/bin/zsh";
+  const shellName = shell.split("/").pop() ?? "zsh";
+  const preferredShellFile = getShellProfile(shellName).preferredFile;
   const files = await Promise.all(
     getShellFiles(shell).map(async (file) => ({
       ...file,
@@ -1039,32 +1336,60 @@ async function loadEnvSummary() {
   for (const [key, values] of grouped) {
     effectiveMap.set(key, values[values.length - 1]);
   }
-  const duplicates = Array.from(grouped.entries()).filter(([, values]) => values.length > 1).map(([key]) => key);
-  const pathValue = effectiveMap.get("PATH")?.value ?? process.env.PATH ?? "";
-  const pathSegments = pathValue.split(":").map((segment) => segment.trim()).filter(Boolean);
-  const pathChecks = await Promise.all(
-    pathSegments.map(async (segment) => {
-      try {
-        await fs3.access(expandHome(segment));
-        return { segment, missing: false };
-      } catch {
-        return { segment, missing: true };
-      }
-    })
+  const duplicateIssues = Array.from(grouped.entries()).filter(([, values]) => values.length > 1).map(([key, values]) => ({
+    key,
+    entries: values,
+    fixable: isSafeDuplicate(entries, values, key)
+  }));
+  const duplicates = duplicateIssues.map((issue) => issue.key);
+  const pathIssues = await collectPathIssues(entries, effectiveMap);
+  const missingPathEntries = Array.from(
+    new Set(pathIssues.filter((issue) => issue.kind === "missing-path").map((issue) => issue.segment))
   );
-  const missingPathEntries = pathChecks.filter((item) => item.missing).map((item) => item.segment);
+  const recommendedEditor = await detectRecommendedEditor();
+  const doctorFixes = buildDoctorFixes({
+    duplicateIssues,
+    pathIssues,
+    effectiveMap,
+    preferredShellFile,
+    recommendedEditor
+  });
+  const health = [
+    ...duplicateIssues.map((issue) => ({
+      status: "warn",
+      message: `${issue.key} defined multiple times${issue.fixable ? " (doctor fix available)" : ""}`
+    })),
+    ...pathIssues.map(
+      (issue) => issue.kind === "missing-path" ? {
+        status: "warn",
+        message: `PATH includes a missing directory: ${issue.segment}  \u2190 ${issue.entry.file}:${issue.entry.line}${issue.fixable ? " (doctor fix available)" : ""}`
+      } : {
+        status: "info",
+        message: `PATH uses an unresolved reference: ${issue.segment}  \u2190 ${issue.entry.file}:${issue.entry.line}`
+      }
+    ),
+    effectiveMap.get("EDITOR") ? { status: "ok", message: "EDITOR is set" } : { status: "warn", message: `EDITOR is not set${doctorFixes.some((fix) => fix.kind === "set-editor") ? " (doctor fix available)" : ""}` },
+    ...effectiveMap.get("LANG")?.value === "en_US.UTF-8" ? [{ status: "ok", message: "LANG is set to en_US.UTF-8" }] : [],
+    ...doctorFixes.length > 0 ? [{ status: "info", message: `Doctor fix has ${doctorFixes.length} safe remediation${doctorFixes.length === 1 ? "" : "s"} ready` }] : []
+  ];
   return {
     shell,
     files,
+    preferredShellFile,
+    recommendedEditor,
     entries,
     effectiveMap,
     duplicates,
-    missingPathEntries
+    duplicateIssues,
+    missingPathEntries,
+    pathIssues,
+    health,
+    doctorFixes
   };
 }
 
 // src/modules/env/EnvModule.tsx
-import { jsx as jsx10, jsxs as jsxs8 } from "react/jsx-runtime";
+import { jsx as jsx11, jsxs as jsxs8 } from "react/jsx-runtime";
 function maskValue(key, value) {
   if (!/(key|token|secret)/i.test(key)) {
     return value;
@@ -1079,9 +1404,14 @@ function EnvModule({ onBack }) {
   const [view, setView] = useState5("menu");
   const [pending, setPending] = useState5(null);
   const [message, setMessage] = useState5("");
+  const [messageTone, setMessageTone] = useState5("success");
   const [query, setQuery] = useState5("");
   const [showSecrets, setShowSecrets] = useState5(false);
   const [loading, setLoading] = useState5(true);
+  const showMessage = (text, tone = "success") => {
+    setMessage(text);
+    setMessageTone(tone);
+  };
   useInput3((input, key) => {
     if (key.tab) {
       setShowSecrets((current) => !current);
@@ -1099,6 +1429,16 @@ function EnvModule({ onBack }) {
     () => summary ? Array.from(summary.effectiveMap.values()).sort((left, right) => left.key.localeCompare(right.key)) : [],
     [summary]
   );
+  const pathEntries = useMemo3(
+    () => summary ? summary.entries.filter((entry) => entry.key === "PATH") : [],
+    [summary]
+  );
+  const pathIssueMap = useMemo3(() => {
+    if (!summary) {
+      return /* @__PURE__ */ new Map();
+    }
+    return new Map(summary.pathIssues.map((issue) => [`${issue.entry.file}:${issue.entry.line}:${issue.segment}`, issue]));
+  }, [summary]);
   const searchMatches = useMemo3(() => {
     if (!summary || !query) {
       return [];
@@ -1106,45 +1446,39 @@ function EnvModule({ onBack }) {
     return summary.entries.filter((entry) => entry.key.toLowerCase().includes(query.toLowerCase()));
   }, [summary, query]);
   if (loading || !summary) {
-    return /* @__PURE__ */ jsx10(Layout, { title: "DevHub \u2014 Environment Variables", subtitle: "\u{1F511} Environment Variable Management", children: /* @__PURE__ */ jsx10(Text10, { color: "#58a6ff", children: "Loading environment variable config..." }) });
+    return /* @__PURE__ */ jsx11(Layout, { title: "DevHub \u2014 Environment Variables", subtitle: "\u{1F511} Environment Variable Management", children: /* @__PURE__ */ jsx11(Text10, { color: THEME.accent, children: "Loading environment variable config..." }) });
   }
+  const messageColor = messageTone === "error" ? THEME.danger : messageTone === "info" ? THEME.accent : THEME.success;
   return /* @__PURE__ */ jsxs8(Layout, { title: "DevHub \u2014 Environment Variables", subtitle: "\u{1F511} Environment Variable Management", children: [
-    /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 Detected Shell Config Files \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-    summary.files.map((file) => /* @__PURE__ */ jsx10(Text10, { color: file.exists ? "#f0f6fc" : "#6e7681", children: `${file.exists ? "\u2713" : " "} ${file.path}${file.note ? `  ${file.note}` : ""}` }, file.path)),
+    /* @__PURE__ */ jsx11(MutedText, { children: "\u2500\u2500 Detected Shell Config Files \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+    summary.files.map((file) => /* @__PURE__ */ jsx11(Text10, { dimColor: !file.exists, children: `${file.exists ? "\u2713" : " "} ${file.path}${file.note ? `  ${file.note}` : ""}` }, file.path)),
     /* @__PURE__ */ jsxs8(Box8, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 Environment Overview \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-      effectiveEntries.slice(0, 8).map((entry) => /* @__PURE__ */ jsx10(Text10, { children: `${entry.key.padEnd(20)} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  \u2190 ${entry.file}:${entry.line}` }, `${entry.key}-${entry.file}-${entry.line}`))
+      /* @__PURE__ */ jsx11(MutedText, { children: "\u2500\u2500 Environment Overview \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      effectiveEntries.slice(0, 8).map((entry) => /* @__PURE__ */ jsx11(Text10, { children: `${entry.key.padEnd(20)} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  \u2190 ${entry.file}:${entry.line}` }, `${entry.key}-${entry.file}-${entry.line}`))
     ] }),
     /* @__PURE__ */ jsxs8(Box8, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-      summary.duplicates.map((key) => /* @__PURE__ */ jsxs8(Box8, { children: [
-        /* @__PURE__ */ jsx10(StatusBadge, { variant: "warn" }),
-        /* @__PURE__ */ jsx10(Text10, { children: ` ${key} defined multiple times` })
-      ] }, `duplicate-${key}`)),
-      summary.missingPathEntries.map((entry) => /* @__PURE__ */ jsxs8(Box8, { children: [
-        /* @__PURE__ */ jsx10(StatusBadge, { variant: "warn" }),
-        /* @__PURE__ */ jsx10(Text10, { children: ` PATH includes a missing directory: ${entry}` })
-      ] }, `missing-path-${entry}`)),
-      summary.effectiveMap.get("EDITOR") ? /* @__PURE__ */ jsxs8(Box8, { children: [
-        /* @__PURE__ */ jsx10(StatusBadge, { variant: "ok" }),
-        /* @__PURE__ */ jsx10(Text10, { children: " EDITOR is set" })
-      ] }) : /* @__PURE__ */ jsxs8(Box8, { children: [
-        /* @__PURE__ */ jsx10(StatusBadge, { variant: "warn" }),
-        /* @__PURE__ */ jsx10(Text10, { children: " EDITOR is not set" })
-      ] }),
-      summary.effectiveMap.get("LANG")?.value === "en_US.UTF-8" ? /* @__PURE__ */ jsxs8(Box8, { children: [
-        /* @__PURE__ */ jsx10(StatusBadge, { variant: "ok" }),
-        /* @__PURE__ */ jsx10(Text10, { children: " LANG is set to en_US.UTF-8" })
-      ] }) : null
+      /* @__PURE__ */ jsx11(MutedText, { children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      summary.health.length === 0 ? /* @__PURE__ */ jsxs8(Box8, { children: [
+        /* @__PURE__ */ jsx11(StatusBadge, { variant: "ok" }),
+        /* @__PURE__ */ jsx11(Text10, { children: " No issues detected" })
+      ] }) : summary.health.map((item, index) => /* @__PURE__ */ jsxs8(Box8, { children: [
+        /* @__PURE__ */ jsx11(StatusBadge, { variant: item.status }),
+        /* @__PURE__ */ jsx11(Text10, { children: ` ${item.message}` })
+      ] }, `${item.status}-${item.message}-${index}`))
     ] }),
     /* @__PURE__ */ jsxs8(Box8, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-      view === "menu" ? /* @__PURE__ */ jsx10(
+      /* @__PURE__ */ jsx11(MutedText, { children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      view === "menu" ? /* @__PURE__ */ jsx11(
         MenuList,
         {
           items: [
             { label: "Search variables (trace by variable name)", value: "search" },
             { label: "View PATH details", value: "path" },
+            {
+              label: "Doctor fix (safe remediation)",
+              value: "doctor",
+              description: summary.doctorFixes.length > 0 ? `${summary.doctorFixes.length} fix${summary.doctorFixes.length === 1 ? "" : "es"} available` : "No safe fixes available right now"
+            },
             { label: "Add a new environment variable", value: "add" },
             { label: "Edit an existing variable", value: "edit" },
             { label: "Check duplicate definitions", value: "dupes" },
@@ -1157,8 +1491,16 @@ function EnvModule({ onBack }) {
               return;
             }
             if (value === "dupes") {
-              setQuery(summary.duplicates[0] ?? "");
+              setQuery(summary.duplicateIssues[0]?.key ?? "");
               setView("search");
+              return;
+            }
+            if (value === "doctor") {
+              if (summary.doctorFixes.length === 0) {
+                showMessage("No safe doctor fixes available. Review the warnings manually.", "info");
+                return;
+              }
+              setView("doctor");
               return;
             }
             setView(value === "add" || value === "edit" ? "edit" : value);
@@ -1166,25 +1508,63 @@ function EnvModule({ onBack }) {
         }
       ) : null,
       view === "search" ? /* @__PURE__ */ jsxs8(Box8, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx10(EditableField, { label: "Enter variable name", placeholder: "OPENAI_API_KEY", defaultValue: query, onSubmit: setQuery }),
-        searchMatches.map((entry) => /* @__PURE__ */ jsx10(Text10, { children: `${entry.key} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  \u2190 ${entry.file}:${entry.line}` }, `${entry.key}-${entry.file}-${entry.line}`)),
-        query && searchMatches.length === 0 ? /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "No matching variable found" }) : null,
-        /* @__PURE__ */ jsx10(BackButton, {})
+        /* @__PURE__ */ jsx11(EditableField, { label: "Enter variable name", placeholder: "OPENAI_API_KEY", defaultValue: query, onSubmit: setQuery }),
+        searchMatches.map((entry) => /* @__PURE__ */ jsx11(Text10, { children: `${entry.key} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  \u2190 ${entry.file}:${entry.line}` }, `${entry.key}-${entry.file}-${entry.line}`)),
+        query && searchMatches.length === 0 ? /* @__PURE__ */ jsx11(MutedText, { children: "No matching variable found" }) : null,
+        /* @__PURE__ */ jsx11(BackButton, {})
       ] }) : null,
-      view === "path" ? /* @__PURE__ */ jsxs8(Box8, { flexDirection: "column", children: [
-        (summary.effectiveMap.get("PATH")?.value ?? process.env.PATH ?? "").split(":").filter(Boolean).map((segment, index) => /* @__PURE__ */ jsx10(Text10, { color: summary.missingPathEntries.includes(segment) ? "#f85149" : "#f0f6fc", children: segment }, `${segment}-${index}`)),
-        /* @__PURE__ */ jsx10(BackButton, {})
+      view === "path" ? /* @__PURE__ */ jsxs8(Box8, { flexDirection: "column", gap: 1, children: [
+        pathEntries.length === 0 ? /* @__PURE__ */ jsx11(MutedText, { children: "No PATH exports found in the scanned files" }) : null,
+        pathEntries.map((entry) => /* @__PURE__ */ jsxs8(Box8, { flexDirection: "column", children: [
+          /* @__PURE__ */ jsx11(MutedText, { children: `${entry.file}:${entry.line}` }),
+          entry.value.split(":").map((segment) => segment.trim()).filter(Boolean).map((segment, index) => {
+            const issue = pathIssueMap.get(`${entry.file}:${entry.line}:${segment}`);
+            const color = issue?.kind === "missing-path" ? THEME.danger : issue?.kind === "unresolved-path" ? THEME.warning : void 0;
+            const detail = issue?.kind === "missing-path" && issue.resolvedSegment && issue.resolvedSegment !== segment ? `  \u2192 ${issue.resolvedSegment}` : issue?.kind === "unresolved-path" ? "  (unresolved reference)" : "";
+            return /* @__PURE__ */ jsx11(Text10, { color, children: `${segment}${detail}` }, `${entry.file}-${entry.line}-${segment}-${index}`);
+          })
+        ] }, `${entry.file}-${entry.line}`)),
+        /* @__PURE__ */ jsx11(BackButton, {})
+      ] }) : null,
+      view === "doctor" ? /* @__PURE__ */ jsxs8(Box8, { flexDirection: "column", gap: 1, children: [
+        /* @__PURE__ */ jsx11(MutedText, { children: "Doctor fix only offers deterministic edits and still shows a diff before writing." }),
+        /* @__PURE__ */ jsx11(
+          MenuList,
+          {
+            items: [
+              ...summary.doctorFixes.map((fix) => ({
+                label: fix.title,
+                value: fix.id,
+                description: fix.description
+              })),
+              { label: "\u2190 Back to actions", value: "back" }
+            ],
+            onSelect: async (value) => {
+              if (value === "back") {
+                setView("menu");
+                return;
+              }
+              try {
+                setPending(await prepareEnvDoctorFix(summary, value));
+                setView("confirm");
+              } catch (error) {
+                showMessage(error instanceof Error ? error.message : "Failed to prepare doctor fix.", "error");
+                setView("menu");
+              }
+            }
+          }
+        )
       ] }) : null,
       view === "edit" ? /* @__PURE__ */ jsxs8(Box8, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx10(
+        /* @__PURE__ */ jsx11(
           EditableField,
           {
             label: "Enter file,key,value, e.g. ~/.zshrc,OPENAI_API_KEY,sk-...",
-            placeholder: "~/.zshrc,EDITOR,code",
+            placeholder: "~/.zshrc,EDITOR,code --wait",
             onSubmit: async (value) => {
               const [filePath, key, nextValue] = value.split(",").map((part) => part.trim());
               if (!filePath || !key || !nextValue) {
-                setMessage("Please enter file, key, and value.");
+                showMessage("Please enter file, key, and value.", "error");
                 return;
               }
               setPending(await prepareEnvChange(filePath, key, nextValue));
@@ -1192,10 +1572,10 @@ function EnvModule({ onBack }) {
             }
           }
         ),
-        /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "After editing, re-source the shell file or restart the terminal." }),
-        /* @__PURE__ */ jsx10(BackButton, {})
+        /* @__PURE__ */ jsx11(MutedText, { children: "After editing, re-source the shell file or restart the terminal." }),
+        /* @__PURE__ */ jsx11(BackButton, {})
       ] }) : null,
-      view === "confirm" && pending ? /* @__PURE__ */ jsx10(
+      view === "confirm" && pending ? /* @__PURE__ */ jsx11(
         ConfirmDialog,
         {
           title: pending.title,
@@ -1206,7 +1586,7 @@ function EnvModule({ onBack }) {
           },
           onConfirm: async () => {
             await pending.execute();
-            setMessage("Environment variable file updated. Run source or reopen the terminal.");
+            showMessage("Environment variable config updated. Run source or reopen the terminal.");
             setPending(null);
             setView("menu");
             await refresh();
@@ -1214,12 +1594,12 @@ function EnvModule({ onBack }) {
         }
       ) : null,
       view === "raw" ? /* @__PURE__ */ jsxs8(Box8, { flexDirection: "column", children: [
-        summary.files.filter((file) => file.exists).map((file) => /* @__PURE__ */ jsx10(Text10, { children: file.path }, file.path)),
-        /* @__PURE__ */ jsx10(BackButton, {})
+        summary.files.filter((file) => file.exists).map((file) => /* @__PURE__ */ jsx11(Text10, { children: file.path }, file.path)),
+        /* @__PURE__ */ jsx11(BackButton, {})
       ] }) : null
     ] }),
-    message ? /* @__PURE__ */ jsx10(Box8, { marginTop: 1, children: /* @__PURE__ */ jsx10(Text10, { color: "#3fb950", children: message }) }) : null,
-    /* @__PURE__ */ jsx10(Text10, { color: "#6e7681", children: "Tab toggles sensitive values on/off" })
+    message ? /* @__PURE__ */ jsx11(Box8, { marginTop: 1, children: /* @__PURE__ */ jsx11(Text10, { color: messageColor, children: message }) }) : null,
+    /* @__PURE__ */ jsx11(MutedText, { children: "Tab toggles sensitive values on/off" })
   ] });
 }
 
@@ -1323,7 +1703,7 @@ async function loadNodeSummary() {
 }
 
 // src/modules/node/NodeModule.tsx
-import { jsx as jsx11, jsxs as jsxs9 } from "react/jsx-runtime";
+import { jsx as jsx12, jsxs as jsxs9 } from "react/jsx-runtime";
 function NodeModule({ onBack }) {
   const [summary, setSummary] = useState6(null);
   const [view, setView] = useState6("menu");
@@ -1339,27 +1719,27 @@ function NodeModule({ onBack }) {
     void refresh();
   }, []);
   if (loading || !summary) {
-    return /* @__PURE__ */ jsx11(Layout, { title: "DevHub \u2014 Node.js Ecosystem", subtitle: "\u{1F49A} Node.js Ecosystem", children: /* @__PURE__ */ jsx11(Text11, { color: "#58a6ff", children: "Loading Node.js ecosystem..." }) });
+    return /* @__PURE__ */ jsx12(Layout, { title: "DevHub \u2014 Node.js Ecosystem", subtitle: "\u{1F49A} Node.js Ecosystem", children: /* @__PURE__ */ jsx12(Text11, { color: THEME.accent, children: "Loading Node.js ecosystem..." }) });
   }
   return /* @__PURE__ */ jsxs9(Layout, { title: "DevHub \u2014 Node.js Ecosystem", subtitle: "\u{1F49A} Node.js Ecosystem", children: [
-    /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 Environment Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-    summary.binaries.map((binary, index) => /* @__PURE__ */ jsx11(Text11, { children: `${binary.name.padEnd(12)} ${binary.version.padEnd(12)} ${binary.installed ? "\u2713" : "\u2717"}${binary.detail ? ` (${binary.detail})` : ""}` }, `${binary.name}-${index}`)),
+    /* @__PURE__ */ jsx12(MutedText, { children: "\u2500\u2500 Environment Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+    summary.binaries.map((binary, index) => /* @__PURE__ */ jsx12(Text11, { children: `${binary.name.padEnd(12)} ${binary.version.padEnd(12)} ${binary.installed ? "\u2713" : "\u2717"}${binary.detail ? ` (${binary.detail})` : ""}` }, `${binary.name}-${index}`)),
     /* @__PURE__ */ jsxs9(Box9, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 npm Config \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-      /* @__PURE__ */ jsx11(Text11, { children: `registry    ${summary.registry}` }),
-      /* @__PURE__ */ jsx11(Text11, { children: `prefix      ${process.env.npm_config_prefix ?? "~/.npm-global"}` }),
-      /* @__PURE__ */ jsx11(Text11, { children: `cache       ${process.env.npm_config_cache ?? "~/.npm"}` })
+      /* @__PURE__ */ jsx12(MutedText, { children: "\u2500\u2500 npm Config \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx12(Text11, { children: `registry    ${summary.registry}` }),
+      /* @__PURE__ */ jsx12(Text11, { children: `prefix      ${process.env.npm_config_prefix ?? "~/.npm-global"}` }),
+      /* @__PURE__ */ jsx12(Text11, { children: `cache       ${process.env.npm_config_cache ?? "~/.npm"}` })
     ] }),
     /* @__PURE__ */ jsxs9(Box9, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      /* @__PURE__ */ jsx12(MutedText, { children: "\u2500\u2500 Health Check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
       summary.health.map((item, index) => /* @__PURE__ */ jsxs9(Box9, { children: [
-        /* @__PURE__ */ jsx11(StatusBadge, { variant: item.status }),
-        /* @__PURE__ */ jsx11(Text11, { children: ` ${item.message}` })
+        /* @__PURE__ */ jsx12(StatusBadge, { variant: item.status }),
+        /* @__PURE__ */ jsx12(Text11, { children: ` ${item.message}` })
       ] }, `${item.status}-${item.message}-${index}`))
     ] }),
     /* @__PURE__ */ jsxs9(Box9, { marginTop: 1, flexDirection: "column", children: [
-      /* @__PURE__ */ jsx11(Text11, { color: "#6e7681", children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-      view === "menu" ? /* @__PURE__ */ jsx11(
+      /* @__PURE__ */ jsx12(MutedText, { children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+      view === "menu" ? /* @__PURE__ */ jsx12(
         MenuList,
         {
           items: [
@@ -1392,7 +1772,7 @@ function NodeModule({ onBack }) {
         }
       ) : null,
       view === "registry" ? /* @__PURE__ */ jsxs9(Box9, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx11(
+        /* @__PURE__ */ jsx12(
           EditableField,
           {
             label: "Enter official or china",
@@ -1406,10 +1786,10 @@ function NodeModule({ onBack }) {
             }
           }
         ),
-        /* @__PURE__ */ jsx11(BackButton, {})
+        /* @__PURE__ */ jsx12(BackButton, {})
       ] }) : null,
       view === "install" ? /* @__PURE__ */ jsxs9(Box9, { flexDirection: "column", gap: 1, children: [
-        /* @__PURE__ */ jsx11(
+        /* @__PURE__ */ jsx12(
           EditableField,
           {
             label: "Enter install target: lts / pnpm / yarn / bun",
@@ -1438,14 +1818,14 @@ function NodeModule({ onBack }) {
             }
           }
         ),
-        /* @__PURE__ */ jsx11(BackButton, {})
+        /* @__PURE__ */ jsx12(BackButton, {})
       ] }) : null,
       view === "packages" ? /* @__PURE__ */ jsxs9(Box9, { flexDirection: "column", children: [
-        /* @__PURE__ */ jsx11(Text11, { children: globalPackages || "(no output)" }),
-        /* @__PURE__ */ jsx11(BackButton, {})
+        /* @__PURE__ */ jsx12(Text11, { children: globalPackages || "(no output)" }),
+        /* @__PURE__ */ jsx12(BackButton, {})
       ] }) : null
     ] }),
-    message ? /* @__PURE__ */ jsx11(Box9, { marginTop: 1, children: /* @__PURE__ */ jsx11(Text11, { color: message === "Unsupported install target." ? "#f85149" : "#3fb950", children: message }) }) : null
+    message ? /* @__PURE__ */ jsx12(Box9, { marginTop: 1, children: /* @__PURE__ */ jsx12(Text11, { color: message === "Unsupported install target." ? THEME.danger : THEME.success, children: message }) }) : null
   ] });
 }
 
@@ -1562,7 +1942,7 @@ var TOOL_REGISTRY = [
 ];
 
 // src/modules/tools/ToolsModule.tsx
-import { jsx as jsx12, jsxs as jsxs10 } from "react/jsx-runtime";
+import { jsx as jsx13, jsxs as jsxs10 } from "react/jsx-runtime";
 function ToolsModule({ onBack }) {
   const [selectedTool, setSelectedTool] = useState7(null);
   const [view, setView] = useState7("list");
@@ -1575,7 +1955,7 @@ function ToolsModule({ onBack }) {
     []
   );
   return /* @__PURE__ */ jsxs10(Layout, { title: "DevHub \u2014 Tool Installation", subtitle: "\u{1F4E5} Common Developer Tool Installation", children: [
-    view === "list" ? /* @__PURE__ */ jsx12(
+    view === "list" ? /* @__PURE__ */ jsx13(
       MenuList,
       {
         items: [...items, { label: "\u2190 Back to main menu", value: "back" }],
@@ -1591,24 +1971,24 @@ function ToolsModule({ onBack }) {
       }
     ) : null,
     view === "detail" && selectedTool ? /* @__PURE__ */ jsxs10(Box10, { flexDirection: "column", children: [
-      /* @__PURE__ */ jsx12(Text12, { children: `\u{1F4E5} ${selectedTool.name} \u2014 ${selectedTool.description}` }),
+      /* @__PURE__ */ jsx13(Text12, { children: `\u{1F4E5} ${selectedTool.name} \u2014 ${selectedTool.description}` }),
       /* @__PURE__ */ jsxs10(Box10, { marginTop: 1, flexDirection: "column", children: [
         /* @__PURE__ */ jsxs10(Text12, { children: [
           "Status: probe command ` ",
           selectedTool.detect.command,
           " `"
         ] }),
-        /* @__PURE__ */ jsx12(Text12, { color: "#6e7681", children: "\u2500\u2500 Installation Methods \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-        selectedTool.install.official.script ? /* @__PURE__ */ jsx12(Text12, { children: `Official install script: ${selectedTool.install.official.script}` }) : null,
-        selectedTool.install.official.brew ? /* @__PURE__ */ jsx12(Text12, { children: `Homebrew: ${selectedTool.install.official.brew}` }) : null,
-        selectedTool.install.official.apt ? /* @__PURE__ */ jsx12(Text12, { children: `apt: ${selectedTool.install.official.apt}` }) : null,
-        selectedTool.install.china?.script ? /* @__PURE__ */ jsx12(Text12, { children: `China mirror: ${selectedTool.install.china.script}` }) : null,
-        selectedTool.install.china?.mirror ? /* @__PURE__ */ jsx12(Text12, { children: `Mirror URL: ${selectedTool.install.china.mirror}` }) : null,
-        selectedTool.install.china?.note ? /* @__PURE__ */ jsx12(Text12, { color: "#d29922", children: selectedTool.install.china.note }) : null
+        /* @__PURE__ */ jsx13(MutedText, { children: "\u2500\u2500 Installation Methods \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+        selectedTool.install.official.script ? /* @__PURE__ */ jsx13(Text12, { children: `Official install script: ${selectedTool.install.official.script}` }) : null,
+        selectedTool.install.official.brew ? /* @__PURE__ */ jsx13(Text12, { children: `Homebrew: ${selectedTool.install.official.brew}` }) : null,
+        selectedTool.install.official.apt ? /* @__PURE__ */ jsx13(Text12, { children: `apt: ${selectedTool.install.official.apt}` }) : null,
+        selectedTool.install.china?.script ? /* @__PURE__ */ jsx13(Text12, { children: `China mirror: ${selectedTool.install.china.script}` }) : null,
+        selectedTool.install.china?.mirror ? /* @__PURE__ */ jsx13(Text12, { children: `Mirror URL: ${selectedTool.install.china.mirror}` }) : null,
+        selectedTool.install.china?.note ? /* @__PURE__ */ jsx13(Text12, { color: THEME.warning, children: selectedTool.install.china.note }) : null
       ] }),
       /* @__PURE__ */ jsxs10(Box10, { marginTop: 1, flexDirection: "column", children: [
-        /* @__PURE__ */ jsx12(Text12, { color: "#6e7681", children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
-        /* @__PURE__ */ jsx12(
+        /* @__PURE__ */ jsx13(MutedText, { children: "\u2500\u2500 Actions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500" }),
+        /* @__PURE__ */ jsx13(
           MenuList,
           {
             items: [
@@ -1644,15 +2024,15 @@ function ToolsModule({ onBack }) {
       ] })
     ] }) : null,
     view === "execute" ? /* @__PURE__ */ jsxs10(Box10, { flexDirection: "column", children: [
-      /* @__PURE__ */ jsx12(Text12, { children: message || "(no output)" }),
-      /* @__PURE__ */ jsx12(BackButton, {})
+      /* @__PURE__ */ jsx13(Text12, { children: message || "(no output)" }),
+      /* @__PURE__ */ jsx13(BackButton, {})
     ] }) : null,
-    message && view !== "execute" ? /* @__PURE__ */ jsx12(Box10, { marginTop: 1, children: /* @__PURE__ */ jsx12(Text12, { color: message.includes("failed") ? "#f85149" : "#3fb950", children: message }) }) : null
+    message && view !== "execute" ? /* @__PURE__ */ jsx13(Box10, { marginTop: 1, children: /* @__PURE__ */ jsx13(Text12, { color: message.includes("failed") ? THEME.danger : THEME.success, children: message }) }) : null
   ] });
 }
 
 // src/app.tsx
-import { jsx as jsx13, jsxs as jsxs11 } from "react/jsx-runtime";
+import { jsx as jsx14, jsxs as jsxs11 } from "react/jsx-runtime";
 function App() {
   const [route, setRoute] = useState8("main");
   const { exit } = useApp();
@@ -1666,22 +2046,22 @@ function App() {
     }
   });
   if (route === "git") {
-    return /* @__PURE__ */ jsx13(GitModule, { onBack: () => setRoute("main") });
+    return /* @__PURE__ */ jsx14(GitModule, { onBack: () => setRoute("main") });
   }
   if (route === "ssh") {
-    return /* @__PURE__ */ jsx13(SSHModule, { onBack: () => setRoute("main") });
+    return /* @__PURE__ */ jsx14(SSHModule, { onBack: () => setRoute("main") });
   }
   if (route === "env") {
-    return /* @__PURE__ */ jsx13(EnvModule, { onBack: () => setRoute("main") });
+    return /* @__PURE__ */ jsx14(EnvModule, { onBack: () => setRoute("main") });
   }
   if (route === "node") {
-    return /* @__PURE__ */ jsx13(NodeModule, { onBack: () => setRoute("main") });
+    return /* @__PURE__ */ jsx14(NodeModule, { onBack: () => setRoute("main") });
   }
   if (route === "tools") {
-    return /* @__PURE__ */ jsx13(ToolsModule, { onBack: () => setRoute("main") });
+    return /* @__PURE__ */ jsx14(ToolsModule, { onBack: () => setRoute("main") });
   }
   return /* @__PURE__ */ jsxs11(Layout, { title: "DevHub \u2014 Development Environment Manager", subtitle: "Select a module to manage:", children: [
-    /* @__PURE__ */ jsx13(
+    /* @__PURE__ */ jsx14(
       MenuList,
       {
         items: [
@@ -1694,12 +2074,12 @@ function App() {
         onSelect: (value) => setRoute(value)
       }
     ),
-    /* @__PURE__ */ jsx13(Text13, { color: "#6e7681", children: "\u2191\u2193 Navigate  \u23CE Open  q Quit" })
+    /* @__PURE__ */ jsx14(MutedText, { children: "\u2191\u2193 Navigate  \u23CE Open  q Quit" })
   ] });
 }
 
 // src/cli.tsx
-import { jsx as jsx14 } from "react/jsx-runtime";
+import { jsx as jsx15 } from "react/jsx-runtime";
 var __dirname2 = dirname2(fileURLToPath2(import.meta.url));
 var PKG_VERSION = JSON.parse(readFileSync2(join2(__dirname2, "..", "package.json"), "utf8")).version;
 var HELP_TEXT = `
@@ -1756,11 +2136,13 @@ MODULES
                effective variable values with source file:line,
                sensitive values masked (Tab to toggle)
      Checks:   Duplicate variable definitions across files,
-               PATH segments that point to non-existent directories,
+               PATH segments that point to non-existent directories
+               or use unresolved references,
                EDITOR set, LANG = en_US.UTF-8
      Actions:  Search/trace any variable by name (provenance),
-               view PATH breakdown, add/edit variables,
-               check duplicate definitions, view raw files
+               view PATH breakdown, run doctor fix for safe remediations,
+               add/edit variables, check duplicate definitions,
+               view raw files
      Writes:   Modifies export lines in shell rc files (with diff preview)
 
   \u{1F49A} Node.js Ecosystem \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
@@ -1852,4 +2234,4 @@ if (args.includes("--version") || args.includes("-v")) {
 `);
   process.exit(0);
 }
-render(/* @__PURE__ */ jsx14(App, {}));
+render(/* @__PURE__ */ jsx15(App, {}));
