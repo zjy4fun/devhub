@@ -1,18 +1,20 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {Box, Text, useInput} from 'ink';
-import {Layout} from '../../components/Layout.js';
-import {MenuList} from '../../components/MenuList.js';
-import {ConfirmDialog} from '../../components/ConfirmDialog.js';
-import {EditableField} from '../../components/EditableField.js';
-import {BackButton} from '../../components/BackButton.js';
-import {StatusBadge} from '../../components/StatusBadge.js';
-import {prepareEnvChange, prepareEnvDoctorFix, type EnvPendingChange} from './env-actions.js';
-import {loadEnvSummary, type EnvSummary} from './env-parser.js';
-import {MutedText} from '../../components/MutedText.js';
-import {THEME} from '../../theme.js';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Text, useInput } from 'ink';
+import { Spinner } from '@inkjs/ui';
+import { Layout } from '../../components/Layout.js';
+import { MenuList } from '../../components/MenuList.js';
+import { ConfirmDialog } from '../../components/ConfirmDialog.js';
+import { EditableField } from '../../components/EditableField.js';
+import { BackButton } from '../../components/BackButton.js';
+import { StatusBadge } from '../../components/StatusBadge.js';
+import { useModule } from '../../hooks/useModule.js';
+import { prepareEnvChange, prepareEnvDoctorFix, type EnvPendingChange } from './env-actions.js';
+import { loadEnvSummary, type EnvSummary } from './env-parser.js';
+import { readTextFile } from '../../utils/file.js';
+import { MutedText } from '../../components/MutedText.js';
+import { THEME } from '../../theme.js';
 
 type EnvView = 'menu' | 'search' | 'path' | 'doctor' | 'edit' | 'confirm' | 'raw';
-type MessageTone = 'success' | 'error' | 'info';
 
 /**
  * Masks sensitive values in default overview mode.
@@ -32,20 +34,14 @@ function maskValue(key: string, value: string): string {
 /**
  * Environment variable inspection and editing screen.
  */
-export function EnvModule({onBack}: {readonly onBack: () => void}) {
-  const [summary, setSummary] = useState<EnvSummary | null>(null);
+export function EnvModule({ onBack }: { readonly onBack: () => void }) {
+  const loader = useCallback(() => loadEnvSummary(), []);
+  const { data: summary, loading, message, messageTone, showMessage, refresh } = useModule<EnvSummary>(loader);
   const [view, setView] = useState<EnvView>('menu');
   const [pending, setPending] = useState<EnvPendingChange | null>(null);
-  const [message, setMessage] = useState('');
-  const [messageTone, setMessageTone] = useState<MessageTone>('success');
   const [query, setQuery] = useState('');
   const [showSecrets, setShowSecrets] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  const showMessage = (text: string, tone: MessageTone = 'success') => {
-    setMessage(text);
-    setMessageTone(tone);
-  };
+  const [rawContents, setRawContents] = useState<Map<string, string>>(new Map());
 
   useInput((input, key) => {
     if (key.tab) {
@@ -53,18 +49,25 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
     }
   });
 
-  const refresh = async () => {
-    setLoading(true);
-    setSummary(await loadEnvSummary());
-    setLoading(false);
-  };
-
+  // Load raw file contents when switching to raw view
   useEffect(() => {
-    void refresh();
-  }, []);
+    if (view !== 'raw' || !summary) return;
+    const loadRaw = async () => {
+      const contents = new Map<string, string>();
+      for (const file of summary.files.filter((f) => f.exists)) {
+        const content = await readTextFile(file.path);
+        contents.set(file.path, content ?? '(empty)');
+      }
+
+      setRawContents(contents);
+    };
+
+    void loadRaw();
+  }, [view, summary]);
 
   const effectiveEntries = useMemo(
-    () => (summary ? Array.from(summary.effectiveMap.values()).sort((left, right) => left.key.localeCompare(right.key)) : []),
+    () =>
+      summary ? Array.from(summary.effectiveMap.values()).sort((left, right) => left.key.localeCompare(right.key)) : [],
     [summary],
   );
   const pathEntries = useMemo(
@@ -76,7 +79,9 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
       return new Map<string, EnvSummary['pathIssues'][number]>();
     }
 
-    return new Map(summary.pathIssues.map((issue) => [`${issue.entry.file}:${issue.entry.line}:${issue.segment}`, issue]));
+    return new Map(
+      summary.pathIssues.map((issue) => [`${issue.entry.file}:${issue.entry.line}:${issue.segment}`, issue]),
+    );
   }, [summary]);
   const searchMatches = useMemo(() => {
     if (!summary || !query) {
@@ -89,7 +94,10 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
   if (loading || !summary) {
     return (
       <Layout title="DevHub — Environment Variables" subtitle="🔑 Environment Variable Management">
-        <Text color={THEME.accent}>Loading environment variable config...</Text>
+        <Box>
+          <Spinner />
+          <Text> Loading environment variable config...</Text>
+        </Box>
       </Layout>
     );
   }
@@ -136,8 +144,8 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
         {view === 'menu' ? (
           <MenuList
             items={[
-              {label: 'Search variables (trace by variable name)', value: 'search'},
-              {label: 'View PATH details', value: 'path'},
+              { label: 'Search variables (trace by variable name)', value: 'search' },
+              { label: 'View PATH details', value: 'path' },
               {
                 label: 'Doctor fix (safe remediation)',
                 value: 'doctor',
@@ -146,11 +154,11 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
                     ? `${summary.doctorFixes.length} fix${summary.doctorFixes.length === 1 ? '' : 'es'} available`
                     : 'No safe fixes available right now',
               },
-              {label: 'Add a new environment variable', value: 'add'},
-              {label: 'Edit an existing variable', value: 'edit'},
-              {label: 'Check duplicate definitions', value: 'dupes'},
-              {label: 'View raw files', value: 'raw'},
-              {label: '← Back to main menu', value: 'back'},
+              { label: 'Add a new environment variable', value: 'add' },
+              { label: 'Edit an existing variable', value: 'edit' },
+              { label: 'Check duplicate definitions', value: 'dupes' },
+              { label: 'View raw files', value: 'raw' },
+              { label: '← Back to main menu', value: 'back' },
             ]}
             onSelect={(value) => {
               if (value === 'back') {
@@ -181,7 +189,12 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
 
         {view === 'search' ? (
           <Box flexDirection="column" gap={1}>
-            <EditableField label="Enter variable name" placeholder="OPENAI_API_KEY" defaultValue={query} onSubmit={setQuery} />
+            <EditableField
+              label="Enter variable name"
+              placeholder="OPENAI_API_KEY"
+              defaultValue={query}
+              onSubmit={setQuery}
+            />
             {searchMatches.map((entry) => (
               <Text key={`${entry.key}-${entry.file}-${entry.line}`}>
                 {`${entry.key} = ${showSecrets ? entry.value : maskValue(entry.key, entry.value)}  ← ${entry.file}:${entry.line}`}
@@ -239,7 +252,7 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
                   value: fix.id,
                   description: fix.description,
                 })),
-                {label: '← Back to actions', value: 'back'},
+                { label: '← Back to actions', value: 'back' },
               ]}
               onSelect={async (value) => {
                 if (value === 'back') {
@@ -299,11 +312,14 @@ export function EnvModule({onBack}: {readonly onBack: () => void}) {
         ) : null}
 
         {view === 'raw' ? (
-          <Box flexDirection="column">
+          <Box flexDirection="column" gap={1}>
             {summary.files
               .filter((file) => file.exists)
               .map((file) => (
-                <Text key={file.path}>{file.path}</Text>
+                <Box key={file.path} flexDirection="column">
+                  <MutedText>{`── ${file.path} ──`}</MutedText>
+                  <Text>{rawContents.get(file.path) ?? '(loading...)'}</Text>
+                </Box>
               ))}
             <BackButton />
           </Box>

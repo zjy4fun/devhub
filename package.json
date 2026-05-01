@@ -4,16 +4,27 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "DevHub TUI for managing local developer environment configuration",
   "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "bin": {
     "devhub": "dist/cli.js"
   },
   "scripts": {
     "dev": "node --import tsx src/cli.tsx",
-    "build": "tsup src/cli.tsx --format esm --dts --clean",
-    "start": "node dist/cli.js"
+    "build": "tsup",
+    "start": "node dist/cli.js",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "tui",
@@ -43,10 +54,16 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "@types/ini": "^4.0.0",
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
+    "eslint": "^9.28.0",
+    "prettier": "^3.5.3",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.33.0",
+    "vitest": "^3.2.1"
   }
 }

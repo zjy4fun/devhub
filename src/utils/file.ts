@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-import {accessSync, constants as fsConstants} from 'node:fs';
+import { accessSync, constants as fsConstants } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -70,10 +70,28 @@ export async function writeTextFile(targetPath: string, content: string): Promis
 }
 
 /**
- * Produces an inline before/after diff preview suitable for confirmation dialogs.
+ * Produces a line-level before/after diff preview suitable for confirmation dialogs.
  */
 export function createDiffPreview(before: string, after: string): string {
-  return [`--- before`, before || '(empty)', `+++ after`, after || '(empty)'].join('\n');
+  const beforeLines = (before || '(empty)').split('\n');
+  const afterLines = (after || '(empty)').split('\n');
+  const lines: string[] = ['--- before'];
+
+  for (const line of beforeLines) {
+    if (!afterLines.includes(line)) {
+      lines.push(`- ${line}`);
+    }
+  }
+
+  lines.push('+++ after');
+
+  for (const line of afterLines) {
+    if (!beforeLines.includes(line)) {
+      lines.push(`+ ${line}`);
+    }
+  }
+
+  return lines.join('\n');
 }
 
 /**

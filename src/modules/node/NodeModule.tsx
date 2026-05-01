@@ -1,42 +1,36 @@
-import React, {useEffect, useState} from 'react';
-import {Box, Text} from 'ink';
-import {Layout} from '../../components/Layout.js';
-import {MenuList} from '../../components/MenuList.js';
-import {StatusBadge} from '../../components/StatusBadge.js';
-import {EditableField} from '../../components/EditableField.js';
-import {loadNodeSummary, type NodeSummary} from './node-checker.js';
-import {runCommand} from '../../utils/shell.js';
-import {CHINA_MIRRORS} from '../../utils/china-mirror.js';
-import {BackButton} from '../../components/BackButton.js';
-import {MutedText} from '../../components/MutedText.js';
-import {THEME} from '../../theme.js';
+import React, { useCallback, useState } from 'react';
+import { Box, Text } from 'ink';
+import { Spinner } from '@inkjs/ui';
+import { Layout } from '../../components/Layout.js';
+import { MenuList } from '../../components/MenuList.js';
+import { StatusBadge } from '../../components/StatusBadge.js';
+import { EditableField } from '../../components/EditableField.js';
+import { useModule } from '../../hooks/useModule.js';
+import { loadNodeSummary, type NodeSummary } from './node-checker.js';
+import { runCommand } from '../../utils/shell.js';
+import { CHINA_MIRRORS } from '../../utils/china-mirror.js';
+import { BackButton } from '../../components/BackButton.js';
+import { MutedText } from '../../components/MutedText.js';
+import { THEME } from '../../theme.js';
 
 type NodeView = 'menu' | 'registry' | 'install' | 'packages' | 'raw';
 
 /**
  * Node ecosystem management screen.
  */
-export function NodeModule({onBack}: {readonly onBack: () => void}) {
-  const [summary, setSummary] = useState<NodeSummary | null>(null);
+export function NodeModule({ onBack }: { readonly onBack: () => void }) {
+  const loader = useCallback(() => loadNodeSummary(), []);
+  const { data: summary, loading, message, showMessage, refresh } = useModule<NodeSummary>(loader);
   const [view, setView] = useState<NodeView>('menu');
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(true);
   const [globalPackages, setGlobalPackages] = useState('');
-
-  const refresh = async () => {
-    setLoading(true);
-    setSummary(await loadNodeSummary());
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    void refresh();
-  }, []);
 
   if (loading || !summary) {
     return (
       <Layout title="DevHub — Node.js Ecosystem" subtitle="💚 Node.js Ecosystem">
-        <Text color={THEME.accent}>Loading Node.js ecosystem...</Text>
+        <Box>
+          <Spinner />
+          <Text> Loading Node.js ecosystem...</Text>
+        </Box>
       </Layout>
     );
   }
@@ -72,12 +66,12 @@ export function NodeModule({onBack}: {readonly onBack: () => void}) {
         {view === 'menu' ? (
           <MenuList
             items={[
-              {label: 'Switch npm registry (official/China mirror)', value: 'registry'},
-              {label: 'Install/update Node.js (via nvm)', value: 'install'},
-              {label: 'Install package managers (pnpm/yarn/bun)', value: 'pkg-manager'},
-              {label: 'View globally installed packages', value: 'packages'},
-              {label: 'Clear npm cache', value: 'cache'},
-              {label: '← Back to main menu', value: 'back'},
+              { label: 'Switch npm registry (official/China mirror)', value: 'registry' },
+              { label: 'Install/update Node.js (via nvm)', value: 'install' },
+              { label: 'Install package managers (pnpm/yarn/bun)', value: 'pkg-manager' },
+              { label: 'View globally installed packages', value: 'packages' },
+              { label: 'Clear npm cache', value: 'cache' },
+              { label: '← Back to main menu', value: 'back' },
             ]}
             onSelect={async (value) => {
               if (value === 'back') {
@@ -87,7 +81,10 @@ export function NodeModule({onBack}: {readonly onBack: () => void}) {
 
               if (value === 'cache') {
                 const result = await runCommand('npm', ['cache', 'clean', '--force'], 15_000);
-                setMessage(result.ok ? result.stdout || 'npm cache cleared.' : result.stderr);
+                showMessage(
+                  result.ok ? result.stdout || 'npm cache cleared.' : result.stderr,
+                  result.ok ? 'success' : 'error',
+                );
                 await refresh();
                 return;
               }
@@ -112,7 +109,10 @@ export function NodeModule({onBack}: {readonly onBack: () => void}) {
               onSubmit={async (value) => {
                 const registry = value.trim() === 'china' ? CHINA_MIRRORS.npm.mirror : CHINA_MIRRORS.npm.official;
                 const result = await runCommand('npm', ['config', 'set', 'registry', registry], 10_000);
-                setMessage(result.ok ? `npm registry switched to ${registry}` : result.stderr);
+                showMessage(
+                  result.ok ? `npm registry switched to ${registry}` : result.stderr,
+                  result.ok ? 'success' : 'error',
+                );
                 setView('menu');
                 await refresh();
               }}
@@ -142,14 +142,24 @@ export function NodeModule({onBack}: {readonly onBack: () => void}) {
                     result = await runCommand('npm', ['install', '-g', 'bun'], 120_000);
                     break;
                   default:
-                    result = {ok: false, stdout: '', stderr: 'Unsupported install target.', code: 1, command: value};
+                    result = {
+                      ok: false,
+                      stdout: '',
+                      stderr: 'Unsupported install target. Use: lts, pnpm, yarn, or bun.',
+                      code: 1,
+                      command: value,
+                    };
                 }
 
-                setMessage(result.ok ? result.stdout || 'Operation complete.' : result.stderr);
+                showMessage(
+                  result.ok ? result.stdout || 'Operation complete.' : result.stderr,
+                  result.ok ? 'success' : 'error',
+                );
                 setView('menu');
                 await refresh();
               }}
             />
+            <MutedText>Supported: lts, pnpm, yarn, bun</MutedText>
             <BackButton />
           </Box>
         ) : null}
@@ -164,7 +174,7 @@ export function NodeModule({onBack}: {readonly onBack: () => void}) {
 
       {message ? (
         <Box marginTop={1}>
-          <Text color={message === 'Unsupported install target.' ? THEME.danger : THEME.success}>{message}</Text>
+          <Text color={THEME.success}>{message}</Text>
         </Box>
       ) : null}
     </Layout>

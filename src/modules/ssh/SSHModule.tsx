@@ -1,43 +1,44 @@
-import React, {useEffect, useState} from 'react';
-import {Box, Text} from 'ink';
-import {Layout} from '../../components/Layout.js';
-import {MenuList} from '../../components/MenuList.js';
-import {StatusBadge} from '../../components/StatusBadge.js';
-import {ConfirmDialog} from '../../components/ConfirmDialog.js';
-import {EditableField} from '../../components/EditableField.js';
-import {BackButton} from '../../components/BackButton.js';
-import {addKeyToAgent, fixSshPermissions, generateSSHKey, prepareHostConfigAppend, testSSHHost, type SshPendingChange} from './ssh-actions.js';
-import {loadSSHSummary, type SSHSummary} from './ssh-parser.js';
-import {MutedText} from '../../components/MutedText.js';
-import {THEME} from '../../theme.js';
+import React, { useCallback, useState } from 'react';
+import { Box, Text } from 'ink';
+import { Spinner } from '@inkjs/ui';
+import { Layout } from '../../components/Layout.js';
+import { MenuList } from '../../components/MenuList.js';
+import { StatusBadge } from '../../components/StatusBadge.js';
+import { ConfirmDialog } from '../../components/ConfirmDialog.js';
+import { EditableField } from '../../components/EditableField.js';
+import { BackButton } from '../../components/BackButton.js';
+import { useModule } from '../../hooks/useModule.js';
+import {
+  addKeyToAgent,
+  fixSshPermissions,
+  generateSSHKey,
+  prepareHostConfigAppend,
+  testSSHHost,
+  type SshPendingChange,
+} from './ssh-actions.js';
+import { loadSSHSummary, type SSHSummary } from './ssh-parser.js';
+import { MutedText } from '../../components/MutedText.js';
+import { THEME } from '../../theme.js';
 
-type SSHView = 'menu' | 'generate' | 'add-agent' | 'edit-host' | 'test' | 'confirm' | 'raw';
+type SSHView = 'menu' | 'generate-email' | 'generate-name' | 'add-agent' | 'edit-host' | 'test' | 'confirm' | 'raw';
 
 /**
  * SSH management screen.
  */
-export function SSHModule({onBack}: {readonly onBack: () => void}) {
-  const [summary, setSummary] = useState<SSHSummary | null>(null);
+export function SSHModule({ onBack }: { readonly onBack: () => void }) {
+  const loader = useCallback(() => loadSSHSummary(), []);
+  const { data: summary, loading, message, showMessage, refresh } = useModule<SSHSummary>(loader);
   const [view, setView] = useState<SSHView>('menu');
-  const [message, setMessage] = useState('');
   const [pending, setPending] = useState<SshPendingChange | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedKey, setSelectedKey] = useState('');
-
-  const refresh = async () => {
-    setLoading(true);
-    setSummary(await loadSSHSummary());
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    void refresh();
-  }, []);
+  const [generateEmail, setGenerateEmail] = useState('');
 
   if (loading || !summary) {
     return (
       <Layout title="DevHub — SSH Config" subtitle="🔐 SSH Config    ~/.ssh/">
-        <Text color={THEME.accent}>Loading SSH config...</Text>
+        <Box>
+          <Spinner />
+          <Text> Loading SSH config...</Text>
+        </Box>
       </Layout>
     );
   }
@@ -54,9 +55,11 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
 
       <Box marginTop={1} flexDirection="column">
         <MutedText>── Host Config ──────────────────────────</MutedText>
-      {summary.hosts.length === 0 ? <MutedText>No Host config detected</MutedText> : null}
+        {summary.hosts.length === 0 ? <MutedText>No Host config detected</MutedText> : null}
         {summary.hosts.map((host, index) => (
-          <Text key={`${host.host}-${host.hostname}-${index}`}>{`${host.host}     → ${host.user}@${host.hostname}:${host.port} (${host.identityFile ?? 'no IdentityFile'})`}</Text>
+          <Text
+            key={`${host.host}-${host.hostname}-${index}`}
+          >{`${host.host}     → ${host.user}@${host.hostname}:${host.port} (${host.identityFile ?? 'no IdentityFile'})`}</Text>
         ))}
       </Box>
 
@@ -75,13 +78,13 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
         {view === 'menu' ? (
           <MenuList
             items={[
-              {label: 'Generate new key pair', value: 'generate'},
-              {label: 'Add key to ssh-agent', value: 'add-agent'},
-              {label: 'Edit host config', value: 'edit-host'},
-              {label: 'Test host connection', value: 'test'},
-              {label: 'Fix file permissions', value: 'fix'},
-              {label: 'View full config (raw)', value: 'raw'},
-              {label: '← Back to main menu', value: 'back'},
+              { label: 'Generate new key pair', value: 'generate' },
+              { label: 'Add key to ssh-agent', value: 'add-agent' },
+              { label: 'Edit host config', value: 'edit-host' },
+              { label: 'Test host connection', value: 'test' },
+              { label: 'Fix file permissions', value: 'fix' },
+              { label: 'View full config (raw)', value: 'raw' },
+              { label: '← Back to main menu', value: 'back' },
             ]}
             onSelect={async (value) => {
               if (value === 'back') {
@@ -91,7 +94,7 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
 
               if (value === 'fix') {
                 const result = await fixSshPermissions(summary.keys.map((key) => key.name));
-                setMessage(result.ok ? result.stdout : result.stderr);
+                showMessage(result.ok ? result.stdout : result.stderr, result.ok ? 'success' : 'error');
                 await refresh();
                 return;
               }
@@ -101,25 +104,51 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
                 return;
               }
 
+              if (value === 'generate') {
+                setView('generate-email');
+                return;
+              }
+
               setView(value as SSHView);
             }}
           />
         ) : null}
 
-        {view === 'generate' ? (
+        {view === 'generate-email' ? (
           <Box flexDirection="column" gap={1}>
             <EditableField
-              label="Enter email and new key filename in the format: email,fileName"
-              placeholder="name@example.com,id_work"
-              onSubmit={async (value) => {
-                const [email, fileName] = value.split(',').map((part) => part.trim());
-                if (!email || !fileName) {
-                  setMessage('Please enter an email and key filename.');
+              label="Step 1/2: Enter email for the key"
+              placeholder="name@example.com"
+              onSubmit={(value) => {
+                if (!value.trim()) {
+                  showMessage('Please enter an email address.', 'error');
                   return;
                 }
 
-                const result = await generateSSHKey(email, fileName);
-                setMessage(result.ok ? result.stdout || 'Key generated.' : result.stderr);
+                setGenerateEmail(value.trim());
+                setView('generate-name');
+              }}
+            />
+            <BackButton />
+          </Box>
+        ) : null}
+
+        {view === 'generate-name' ? (
+          <Box flexDirection="column" gap={1}>
+            <EditableField
+              label={`Step 2/2: Enter key filename (email: ${generateEmail})`}
+              placeholder="id_work"
+              onSubmit={async (value) => {
+                if (!value.trim()) {
+                  showMessage('Please enter a key filename.', 'error');
+                  return;
+                }
+
+                const result = await generateSSHKey(generateEmail, value.trim());
+                showMessage(
+                  result.ok ? result.stdout || 'Key generated.' : result.stderr,
+                  result.ok ? 'success' : 'error',
+                );
                 setView('menu');
                 await refresh();
               }}
@@ -133,15 +162,17 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
             <EditableField
               label="Enter the key filename to add to the agent"
               placeholder="id_ed25519"
-              defaultValue={selectedKey}
               onSubmit={async (value) => {
                 if (!value.trim()) {
-                  setMessage('Please enter a key filename.');
+                  showMessage('Please enter a key filename.', 'error');
                   return;
                 }
 
                 const result = await addKeyToAgent(value);
-                setMessage(result.ok ? result.stdout || 'Added to ssh-agent.' : result.stderr);
+                showMessage(
+                  result.ok ? result.stdout || 'Added to ssh-agent.' : result.stderr,
+                  result.ok ? 'success' : 'error',
+                );
                 setView('menu');
                 await refresh();
               }}
@@ -158,7 +189,7 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
               onSubmit={async (value) => {
                 const [alias, hostName, user, identityFile] = value.split(',').map((part) => part.trim());
                 if (!alias || !hostName || !user || !identityFile) {
-                  setMessage('Please enter alias, hostname, user, and identityFile.');
+                  showMessage('Please enter alias, hostname, user, and identityFile.', 'error');
                   return;
                 }
 
@@ -177,12 +208,15 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
               placeholder="github.com"
               onSubmit={async (value) => {
                 if (!value.trim()) {
-                  setMessage('Please enter the Host alias to test.');
+                  showMessage('Please enter the Host alias to test.', 'error');
                   return;
                 }
 
                 const result = await testSSHHost(value);
-                setMessage(result.ok ? result.stdout || result.stderr || 'Connection test complete.' : result.stderr);
+                showMessage(
+                  result.ok ? result.stdout || result.stderr || 'Connection test complete.' : result.stderr,
+                  result.ok ? 'success' : 'error',
+                );
                 setView('menu');
               }}
             />
@@ -200,7 +234,7 @@ export function SSHModule({onBack}: {readonly onBack: () => void}) {
             }}
             onConfirm={async () => {
               const result = await pending.execute();
-              setMessage(result.ok ? result.stdout : result.stderr);
+              showMessage(result.ok ? result.stdout : result.stderr, result.ok ? 'success' : 'error');
               setPending(null);
               setView('menu');
               await refresh();

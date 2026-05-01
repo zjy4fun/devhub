@@ -1,6 +1,6 @@
-import {createDiffPreview, readTextFile, writeTextFile} from '../../utils/file.js';
-import {sanitizeInput} from '../../utils/shell.js';
-import type {EnvDoctorFix, EnvEntry, EnvSummary} from './env-parser.js';
+import { createDiffPreview, readTextFile, writeTextFile } from '../../utils/file.js';
+import { sanitizeInput } from '../../utils/shell.js';
+import type { EnvDoctorFix, EnvEntry, EnvSummary } from './env-parser.js';
 
 const EXPORT_PATTERN = /^\s*export\s+([A-Za-z_][A-Za-z0-9_]*)=/;
 const FISH_EXPORT_PATTERN = /^\s*set\s+-(?:g?x|xg)\s+([A-Za-z_][A-Za-z0-9_]*)\s+/;
@@ -135,7 +135,7 @@ async function prepareDuplicateFix(summary: EnvSummary, fix: EnvDoctorFix): Prom
       .join('\n');
 
     if (current !== next) {
-      changes.push({filePath, before: current, after: next});
+      changes.push({ filePath, before: current, after: next });
     }
   }
 
@@ -217,10 +217,8 @@ export async function prepareEnvDoctorFix(summary: EnvSummary, fixId: string): P
       return preparePathFix(summary, fix);
     case 'set-editor':
       return prepareEditorFix(summary, fix);
-    default: {
-      const neverFix: never = fix;
-      throw new Error(`Unsupported doctor fix: ${JSON.stringify(neverFix)}`);
-    }
+    default:
+      throw new Error(`Unsupported doctor fix: ${JSON.stringify(fix)}`);
   }
 }
 

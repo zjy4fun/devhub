@@ -1,17 +1,19 @@
 import path from 'node:path';
 import ini from 'ini';
-import {z} from 'zod';
-import {detectPlatform} from '../../utils/platform.js';
-import {expandHome, pathExists, readTextFile} from '../../utils/file.js';
+import { z } from 'zod';
+import { detectPlatform } from '../../utils/platform.js';
+import { expandHome, pathExists, readTextFile } from '../../utils/file.js';
+
+const StringRecord = z.record(z.string(), z.string().or(z.boolean()).transform(String));
 
 const GitConfigSchema = z.object({
-  user: z.record(z.string(), z.string()).optional(),
-  core: z.record(z.string(), z.string()).optional(),
-  init: z.record(z.string(), z.string()).optional(),
-  pull: z.record(z.string(), z.string()).optional(),
-  credential: z.record(z.string(), z.string()).optional(),
-  commit: z.record(z.string(), z.string()).optional(),
-  gpg: z.record(z.string(), z.string()).optional(),
+  user: StringRecord.optional(),
+  core: StringRecord.optional(),
+  init: StringRecord.optional(),
+  pull: StringRecord.optional(),
+  credential: StringRecord.optional(),
+  commit: StringRecord.optional(),
+  gpg: StringRecord.optional(),
 });
 
 /**
@@ -73,30 +75,30 @@ export async function loadGitConfig(cwd = process.cwd()): Promise<GitConfigSumma
 
   const health: HealthItem[] = [
     globalConfig.user?.name
-      ? {status: 'ok', message: 'user.name configured'}
-      : {status: 'error', message: 'user.name not configured'},
+      ? { status: 'ok', message: 'user.name configured' }
+      : { status: 'error', message: 'user.name not configured' },
     globalConfig.user?.email
-      ? {status: 'ok', message: 'user.email configured'}
-      : {status: 'error', message: 'user.email not configured'},
+      ? { status: 'ok', message: 'user.email configured' }
+      : { status: 'error', message: 'user.email not configured' },
     globalConfig.init?.defaultBranch === 'main'
-      ? {status: 'ok', message: 'init.defaultBranch = main'}
-      : {status: 'warn', message: 'init.defaultBranch should be set to main'},
+      ? { status: 'ok', message: 'init.defaultBranch = main' }
+      : { status: 'warn', message: 'init.defaultBranch should be set to main' },
     globalConfig.core?.autocrlf
-      ? {status: 'ok', message: `core.autocrlf = ${globalConfig.core.autocrlf}`}
+      ? { status: 'ok', message: `core.autocrlf = ${globalConfig.core.autocrlf}` }
       : {
           status: 'warn',
           message: `core.autocrlf not set (recommended: ${platform === 'Windows' ? 'true' : 'input'})`,
         },
     globalConfig.pull?.rebase
-      ? {status: 'ok', message: `pull.rebase = ${globalConfig.pull.rebase}`}
-      : {status: 'warn', message: 'pull.rebase not set'},
+      ? { status: 'ok', message: `pull.rebase = ${globalConfig.pull.rebase}` }
+      : { status: 'warn', message: 'pull.rebase not set' },
     globalConfig.commit?.gpgsign || globalConfig.gpg?.format || globalConfig.user?.signingkey
-      ? {status: 'ok', message: 'Signing-related config detected'}
-      : {status: 'warn', message: 'No GPG/SSH signing config detected'},
+      ? { status: 'ok', message: 'Signing-related config detected' }
+      : { status: 'warn', message: 'No GPG/SSH signing config detected' },
   ];
 
   if (await pathExists(localPath)) {
-    health.push({status: 'info', message: `Local config detected: ${localPath}`});
+    health.push({ status: 'info', message: `Local config detected: ${localPath}` });
   }
 
   return {

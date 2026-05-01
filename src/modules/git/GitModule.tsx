@@ -1,16 +1,24 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {Box, Text} from 'ink';
-import {Layout} from '../../components/Layout.js';
-import {MenuList} from '../../components/MenuList.js';
-import {KeyValue} from '../../components/KeyValue.js';
-import {StatusBadge} from '../../components/StatusBadge.js';
-import {ConfirmDialog} from '../../components/ConfirmDialog.js';
-import {EditableField} from '../../components/EditableField.js';
-import {BackButton} from '../../components/BackButton.js';
-import {executeGitChange, getGitRawConfig, prepareGitAliasChange, prepareGitConfigChange, type GitPendingChange} from './git-actions.js';
-import {loadGitConfig, type GitConfigSummary} from './git-parser.js';
-import {MutedText} from '../../components/MutedText.js';
-import {THEME} from '../../theme.js';
+import React, { useMemo, useState } from 'react';
+import { Box, Text } from 'ink';
+import { Spinner } from '@inkjs/ui';
+import { Layout } from '../../components/Layout.js';
+import { MenuList } from '../../components/MenuList.js';
+import { KeyValue } from '../../components/KeyValue.js';
+import { StatusBadge } from '../../components/StatusBadge.js';
+import { ConfirmDialog } from '../../components/ConfirmDialog.js';
+import { EditableField } from '../../components/EditableField.js';
+import { BackButton } from '../../components/BackButton.js';
+import { useModule } from '../../hooks/useModule.js';
+import {
+  executeGitChange,
+  getGitRawConfig,
+  prepareGitAliasChange,
+  prepareGitConfigChange,
+  type GitPendingChange,
+} from './git-actions.js';
+import { loadGitConfig, type GitConfigSummary } from './git-parser.js';
+import { MutedText } from '../../components/MutedText.js';
+import { THEME } from '../../theme.js';
 
 type GitView = 'menu' | 'edit' | 'confirm' | 'raw';
 type GitAction = 'identity' | 'editor' | 'branch' | 'alias' | 'pull' | 'raw';
@@ -18,46 +26,34 @@ type GitAction = 'identity' | 'editor' | 'branch' | 'alias' | 'pull' | 'raw';
 /**
  * Git configuration page with preview, health checks, and guided edits.
  */
-export function GitModule({onBack}: {readonly onBack: () => void}) {
-  const [summary, setSummary] = useState<GitConfigSummary | null>(null);
+export function GitModule({ onBack }: { readonly onBack: () => void }) {
+  const { data: summary, loading, message, showMessage, refresh } = useModule<GitConfigSummary>(loadGitConfig);
   const [view, setView] = useState<GitView>('menu');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<GitPendingChange | null>(null);
   const [selectedAction, setSelectedAction] = useState<GitAction>('identity');
-  const [message, setMessage] = useState<string>('');
   const [rawText, setRawText] = useState<string>('');
-
-  const refresh = async () => {
-    setLoading(true);
-    setError(null);
-    const nextSummary = await loadGitConfig();
-    setSummary(nextSummary);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    void refresh();
-  }, []);
 
   const overview = useMemo(() => summary?.preview, [summary]);
 
   if (loading || !summary || !overview) {
     return (
       <Layout title="DevHub — Git Config" subtitle="📦 Git Config    ~/.gitconfig">
-        <Text color={THEME.accent}>Loading Git config...</Text>
+        <Box>
+          <Spinner />
+          <Text> Loading Git config...</Text>
+        </Box>
       </Layout>
     );
   }
 
   const actions = [
-    {label: 'Edit username/email', value: 'identity'},
-    {label: 'Edit default editor', value: 'editor'},
-    {label: 'Edit default branch name', value: 'branch'},
-    {label: 'Set common aliases', value: 'alias'},
-    {label: 'Set pull strategy', value: 'pull'},
-    {label: 'View full config (raw)', value: 'raw'},
-    {label: '← Back to main menu', value: 'back'},
+    { label: 'Edit username/email', value: 'identity' },
+    { label: 'Edit default editor', value: 'editor' },
+    { label: 'Edit default branch name', value: 'branch' },
+    { label: 'Set common aliases', value: 'alias' },
+    { label: 'Set pull strategy', value: 'pull' },
+    { label: 'View full config (raw)', value: 'raw' },
+    { label: '← Back to main menu', value: 'back' },
   ] as const;
 
   const submitSingleChange = async (key: string, currentValue: string, nextValue: string) => {
@@ -73,7 +69,11 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
       <KeyValue label="Default Editor" value={overview.defaultEditor} muted={overview.defaultEditor === '(not set)'} />
       <KeyValue label="Default Branch" value={overview.defaultBranch} muted={overview.defaultBranch === '(not set)'} />
       <KeyValue label="Pull Strategy" value={overview.pullStrategy} muted={overview.pullStrategy === '(not set)'} />
-      <KeyValue label="Credential Helper" value={overview.credentialHelper} muted={overview.credentialHelper === '(not set)'} />
+      <KeyValue
+        label="Credential Helper"
+        value={overview.credentialHelper}
+        muted={overview.credentialHelper === '(not set)'}
+      />
 
       <Box marginTop={1} flexDirection="column">
         <MutedText>── Health Check ──────────────────────────</MutedText>
@@ -105,7 +105,12 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
 
               if (value === 'raw') {
                 setRawText(
-                  [`# Global: ${summary.globalPath}`, await getGitRawConfig(summary.globalPath), '', summary.localRaw ? `# Local: ${summary.localPath}\n${summary.localRaw}` : '# Local: not found'].join('\n'),
+                  [
+                    `# Global: ${summary.globalPath}`,
+                    await getGitRawConfig(summary.globalPath),
+                    '',
+                    summary.localRaw ? `# Local: ${summary.localPath}\n${summary.localRaw}` : '# Local: not found',
+                  ].join('\n'),
                 );
                 setView('raw');
                 return;
@@ -141,7 +146,9 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
               label={`Current default editor: ${overview.defaultEditor}`}
               defaultValue={summary.globalConfig.core?.editor}
               placeholder="e.g. code --wait"
-              onSubmit={(value) => void submitSingleChange('core.editor', summary.globalConfig.core?.editor ?? '', value)}
+              onSubmit={(value) =>
+                void submitSingleChange('core.editor', summary.globalConfig.core?.editor ?? '', value)
+              }
             />
             <BackButton />
           </Box>
@@ -153,7 +160,9 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
               label={`Current default branch: ${overview.defaultBranch}`}
               defaultValue={summary.globalConfig.init?.defaultBranch ?? 'main'}
               placeholder="main"
-              onSubmit={(value) => void submitSingleChange('init.defaultBranch', summary.globalConfig.init?.defaultBranch ?? '', value)}
+              onSubmit={(value) =>
+                void submitSingleChange('init.defaultBranch', summary.globalConfig.init?.defaultBranch ?? '', value)
+              }
             />
             <BackButton />
           </Box>
@@ -165,7 +174,9 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
               label={`Current pull strategy: ${overview.pullStrategy}`}
               defaultValue={summary.globalConfig.pull?.rebase ?? 'true'}
               placeholder="true / false / merges"
-              onSubmit={(value) => void submitSingleChange('pull.rebase', summary.globalConfig.pull?.rebase ?? '', value)}
+              onSubmit={(value) =>
+                void submitSingleChange('pull.rebase', summary.globalConfig.pull?.rebase ?? '', value)
+              }
             />
             <BackButton />
           </Box>
@@ -181,7 +192,10 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
             }}
             onConfirm={async () => {
               const result = await executeGitChange(pending);
-              setMessage(result.ok ? result.stdout || 'Updated successfully.' : `Failed: ${result.stderr}`);
+              showMessage(
+                result.ok ? result.stdout || 'Updated successfully.' : `Failed: ${result.stderr}`,
+                result.ok ? 'success' : 'error',
+              );
               setPending(null);
               setView('menu');
               await refresh();
@@ -201,7 +215,6 @@ export function GitModule({onBack}: {readonly onBack: () => void}) {
             <Text color={message.startsWith('Failed') ? THEME.danger : THEME.success}>{message}</Text>
           </Box>
         ) : null}
-        {error ? <Text color={THEME.danger}>{error}</Text> : null}
       </Box>
     </Layout>
   );
